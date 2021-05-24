@@ -60,7 +60,7 @@ public class MainGameScreen implements Screen{
         _player = new Entity();
         _player.init(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y);
 
-        _currentPlayerSprite = _player.getFrameSprite();
+        _currentPlayerSprite = _player.getframeSprite();
 
         _controller = new PlayerController(_player);
         Gdx.input.setInputProcessor((InputProcessor) _controller);
