@@ -1,7 +1,7 @@
-package com.mygdx.game;
+package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Screen;
-import com.mygdx.game.screens.MainGameScreen;
+import com.mygdx.rpgame.screens.MainGameScreen;
 import com.badlogic.gdx.Game;
 
 public class BludBourne extends Game {

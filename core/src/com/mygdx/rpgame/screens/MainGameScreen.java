@@ -1,4 +1,4 @@
-package com.mygdx.game.screens;
+package com.mygdx.rpgame.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -12,9 +12,9 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.game.Entity;
-import com.mygdx.game.MapManager;
-import com.mygdx.game.PlayerController;
+import com.mygdx.rpgame.Entity;
+import com.mygdx.rpgame.MapManager;
+import com.mygdx.rpgame.PlayerController;
 
 public class MainGameScreen implements Screen{
     private static final String TAG = MainGameScreen.class.getSimpleName();

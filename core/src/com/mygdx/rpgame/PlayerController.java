@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.rpgame;
 
 import java.util.HashMap;
 import java.util.Map;
