@@ -150,6 +150,78 @@ public abstract class PhysicsComponent implements Component{
         //.8f for 20% (1 - .20)
         float heightReductionAmount = 1.0f - percentageHeightReduced;
 
+        if( widthReductionAmount > 0 && widthReductionAmount < 1){
+            width = Entity.FRAME_WIDTH * widthReductionAmount;
+        } else {
+            width = Entity.FRAME_WIDTH;
+        }
 
+        if (heightReductionAmount > 0 && heightReductionAmount < 1){
+            height = Entity.FRAME_HEIGHT * heightReductionAmount;
+        } else  {
+            height = Entity.FRAME_HEIGHT;
+        }
+
+        if (width == 0 || height == 0){
+            Gdx.app.debug(TAG, "Width and Height are 0! " + width + ":" + height);
+        }
+
+        //Need to account for the unitscale, since the map
+        //coordinates will be in pixels
+        float minX;
+        float minY;
+
+        if (Map.UNIT_SCALE > 0){
+            minX = _nextEntityPosition.x / Map.UNIT_SCALE;
+            minY = _nextEntityPosition.y / Map.UNIT_SCALE;
+        } else {
+            minX = _nextEntityPosition.x;
+            minY = _nextEntityPosition.y;
+        }
+
+        _boundingBox.setWidth(width);
+        _boundingBox.setHeight(height);
+
+        switch (_boundingBoxLocation){
+            case BOTTOM_LEFT:
+                _boundingBox.set(minX, minY, width, height);
+                break;
+            case BOTTOM_CENTER:
+                _boundingBox.setCenter(minX + origWidth / 2, minY + origHeight / 4);
+                break;
+            case CENTER:
+                _boundingBox.setCenter(minX + origWidth / 2, minY + origHeight / 2);
+                break;
+        }
+    }
+
+    protected void updateBoundingBoxPosition(Vector2 position){
+        //Need to account for the unitscale, since the map
+        //coordinates will be in pixels
+        float minX;
+        float minY;
+
+        if (Map.UNIT_SCALE > 0){
+            minX = position.x / Map.UNIT_SCALE;
+            minY = position.y / Map.UNIT_SCALE;
+        } else {
+            minX = position.x;
+            minY = position.y;
+        }
+
+        switch (_boundingBoxLocation){
+            case BOTTOM_LEFT:
+                _boundingBox.set(minX, minY, _boundingBox.getWidth(), _boundingBox.getHeight());
+                break;
+            case BOTTOM_CENTER:
+                _boundingBox.setCenter(minX + Entity.FRAME_WIDTH/2, minY + Entity.FRAME_HEIGHT/4);
+                break;
+            case CENTER:
+                _boundingBox.setCenter(minX + Entity.FRAME_WIDTH / 2, minY + Entity.FRAME_HEIGHT/2);
+                break;
+        }
+
+//        Gdx.app.debug(TAG, "SETTING Bounding Box for " + entity.getEntityConfig().getEntityID()
+//                + ": (" + minX + "," + minY + ") width: " + width + " height: " + height);
     }
 }
