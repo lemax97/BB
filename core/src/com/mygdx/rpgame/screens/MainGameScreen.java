@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.rpgame.Entity;
+import com.mygdx.rpgame.Map;
 import com.mygdx.rpgame.MapManager;
 import com.mygdx.rpgame.PlayerController;
 
@@ -52,7 +53,7 @@ public class MainGameScreen implements Screen{
         _camera = new OrthographicCamera();
         _camera.setToOrtho(false, VIEWPORT.viewportWidth, VIEWPORT.viewportHeight);
 
-        _mapRenderer = new OrthogonalTiledMapRenderer(_mapMgr.getCurrentMap(), MapManager.UNIT_SCALE);
+        _mapRenderer = new OrthogonalTiledMapRenderer(_mapMgr.getCurrentMap(), Map.UNIT_SCALE);
         _mapRenderer.setView(_camera);
 
         Gdx.app.debug(TAG, "UnitScale value is: " + _mapRenderer.getUnitScale());
@@ -193,7 +194,7 @@ public class MainGameScreen implements Screen{
                     if (mapName == null){
                         return false;
                     }
-                    _mapMgr.setClosestStartPositionFromScaledUnits(_player.getCurrentPosition());
+//                    _mapMgr.setClosestStartPositionFromScaledUnits(_player.getCurrentPosition());
                     _mapMgr.loadMap(mapName);
                     _player.init(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y);
                     _mapRenderer.setMap(_mapMgr.getCurrentMap());

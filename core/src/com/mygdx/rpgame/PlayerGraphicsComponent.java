@@ -2,9 +2,12 @@ package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -55,12 +58,30 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
     }
 
     @Override
+    public void update(Entity entity, MapManager mapManager, Batch batch, float delta) {
+        updateAnimations(delta);
+
+        Camera camera = mapMgr.getCamera();
+        camera.position.set(_currentPosition.x, _currentPosition.y, 0f);
+        camera.update();
+
+        batch.begin();
+        batch.draw(_currentFrame, _currentPosition.x, _currentPosition.y, 1, 1);
+        batch.end();
+
+        //Used to graphically debug boundingboxes
+        Rectangle rect = entity.getCurrentBoundingBox();
+        _shapeRenderer.setProjectionMatrix(camera.combined);
+        _shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        _shapeRenderer.setColor(Color.RED);
+        _shapeRenderer.rect(rect.getX() * Map.UNIT_SCALE, rect.getY() * Map.UNIT_SCALE,
+                rect.getWidth() * Map.UNIT_SCALE, rect.getHeight() * Map.UNIT_SCALE);
+        _shapeRenderer.end();
+    }
+    @Override
     public void dispose() {
 
     }
 
-    @Override
-    public void update(Entity entity, MapManager mapManager, Batch batch, float delta) {
 
-    }
 }
