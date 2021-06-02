@@ -34,6 +34,7 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
 
     @Override
     public void receiveMessage(String message) {
+        //        Gdx.app.debug(TAG, "Got message " + message);
         String[] string = message.split(Component.MESSAGE_TOKEN);
 
         if (string.length == 0) return;

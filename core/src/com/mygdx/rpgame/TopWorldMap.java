@@ -7,11 +7,13 @@ public class TopWorldMap extends Map{
 
 
     TopWorldMap() {
-        super(MapFactory.MapType.TOWN, _mapPath);
+        super(MapFactory.MapType.TOP_WORLD, _mapPath);
     }
 
     @Override
     public void updateMapEntities(MapManager mapMgr, Batch batch, float delta) {
-
+        for (Entity entity : _mapEntities ){
+            entity.update(mapMgr, batch, delta);
+        }
     }
 }

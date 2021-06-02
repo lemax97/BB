@@ -50,33 +50,42 @@ public class MapManager {
         return _currentMap.getPlayerStartUnitScaled();
     }
 
-    private  void setClosestStartPosition(final Vector2 position){
-
+    public TiledMap getCurrentTiledMap() {
+        if (_currentMap == null) {
+            loadMap(MapFactory.MapType.TOWN);
+        }
+        return _currentMap.getCurrentTiledMap();
     }
-
-    public TiledMap getCurrentMap(){
-
-    }
-
-
-
 
     public void updateCurrentMapEntities(MapManager mapMgr, Batch batch, float delta) {
+        _currentMap.updateMapEntities(mapMgr, batch, delta);
     }
 
-    public boolean hasMapChanged() {
-        return false;
+    public final Array<Entity> getCurrentMapEntities(){
+        return _currentMap.getMapEntities();
     }
 
-    public TiledMap getCurrentTiledMap() {
+    public void setPlayer(Entity entity) {
+        this._player = entity;
     }
 
-    public void setMapChanged(boolean b) {
+    public Entity getPlayer(){
+        return this._player;
     }
 
     public void setCamera(OrthographicCamera camera) {
+        this._camera = camera;
     }
 
-    public void setPlayer(Entity player) {
+    public Camera getCamera(){
+        return _camera;
+    }
+
+    public boolean hasMapChanged() {
+        return _mapChanged;
+    }
+
+    public void setMapChanged(boolean hasMapChanged) {
+        this._mapChanged = hasMapChanged;
     }
 }

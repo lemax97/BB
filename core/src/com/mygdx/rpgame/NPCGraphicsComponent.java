@@ -2,7 +2,7 @@ package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,21 +11,28 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import com.mygdx.rpgame.EntityConfig.AnimationConfig;
+public class NPCGraphicsComponent extends GraphicsComponent{
+    private static final String TAG = NPCGraphicsComponent.class.getSimpleName();
 
-public class PlayerGraphicsComponent extends GraphicsComponent{
+    private boolean _isSelected = false;
 
-    private static final String TAG = PlayerGraphicsComponent.class.getSimpleName();
-
-    public PlayerGraphicsComponent(){
+    public NPCGraphicsComponent() {
     }
 
     @Override
     public void receiveMessage(String message) {
-//        Gdx.app.debug(TAG, "Got message " + message);
+        //        Gdx.app.debug(TAG, "Got message " + message);
         String[] string = message.split(MESSAGE_TOKEN);
 
         if ( string.length == 0 ) return;
+
+        if (string.length == 1){
+            if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_SELECTED.toString())){
+                _isSelected = true;
+            } else if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_DESELECTED.toString())){
+                _isSelected = false;
+            }
+        }
 
         //Specifically for messages with 1 object payload
         if (string.length == 2){
@@ -39,9 +46,9 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
                 _currentDirection = _json.fromJson(Entity.Direction.class, string[1]);
             } else if (string[0].equalsIgnoreCase(MESSAGE.LOAD_ANIMATIONS.toString())){
                 EntityConfig entityConfig = _json.fromJson(EntityConfig.class, string[1]);
-                Array<AnimationConfig> animationConfigs = entityConfig.getAnimationConfig();
+                Array<EntityConfig.AnimationConfig> animationConfigs = entityConfig.getAnimationConfig();
 
-                for (AnimationConfig animationConfig : animationConfigs){
+                for (EntityConfig.AnimationConfig animationConfig : animationConfigs){
                     Array<String> textureNames = animationConfig.getTexturePaths();
                     Array<GridPoint2> points = animationConfig.getGridPoints();
                     Entity.AnimationType animationType = animationConfig.getAnimationType();
@@ -62,18 +69,19 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
 
     @Override
     public void update(Entity entity, MapManager mapMgr, Batch batch, float delta) {
-        updateAnimations(delta);
+       updateAnimations(delta);
 
-        Camera camera = mapMgr.getCamera();
-        camera.position.set(_currentPosition.x, _currentPosition.y, 0f);
-        camera.update();
+       if (_isSelected){
+           drawSelected(entity, mapMgr);
+       }
 
-        batch.begin();
-        batch.draw(_currentFrame, _currentPosition.x, _currentPosition.y, 1, 1);
-        batch.end();
+       batch.begin();
+       batch.draw(_currentFrame, _currentPosition.x, _currentPosition.y, 1, 1);
+       batch.end();
 
         //Used to graphically debug boundingboxes
-       /* Rectangle rect = entity.getCurrentBoundingBox();
+       /*
+        Rectangle rect = entity.getCurrentBoundingBox();
         _shapeRenderer.setProjectionMatrix(camera.combined);
         _shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         _shapeRenderer.setColor(Color.RED);
@@ -82,8 +90,33 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
         _shapeRenderer.end();
         */
     }
+
+    private void drawSelected(Entity entity, MapManager mapMgr){
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Camera camera = mapMgr.getCamera();
+        Rectangle rect = entity.getCurrentBoundingBox();
+        _shapeRenderer.setProjectionMatrix(camera.combined);
+        _shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        _shapeRenderer.setColor(0.0f, 1.0f, 1.0f, 0.5f);
+
+        float width = rect.getWidth() * Map.UNIT_SCALE * 2f;
+        float height = rect.getHeight() * Map.UNIT_SCALE / 2f;
+
+        float x = rect.x * Map.UNIT_SCALE - width / 4;
+        float y = rect.y * Map.UNIT_SCALE - height / 2;
+
+        _shapeRenderer.ellipse(x, y, width, height);
+        _shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
     @Override
     public void dispose() {
 
     }
+
+
+
+
 }
