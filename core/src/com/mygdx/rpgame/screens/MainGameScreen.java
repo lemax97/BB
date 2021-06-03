@@ -1,18 +1,15 @@
 package com.mygdx.rpgame.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Json;
 
-import com.mygdx.rpgame.MapManager;
-import com.mygdx.rpgame.Entity;
-import com.mygdx.rpgame.EntityFactory;
-import com.mygdx.rpgame.Component;
-import com.mygdx.rpgame.Map;
+import com.mygdx.rpgame.*;
+import com.mygdx.rpgame.UI.PlayerHUD;
 
 public class MainGameScreen implements Screen {
     private static final String TAG = MainGameScreen.class.getSimpleName();
@@ -31,10 +28,26 @@ public class MainGameScreen implements Screen {
     private OrthographicCamera _camera = null;
     private static MapManager _mapMgr;
     private Json _json;
+    private BludBourne _game;
 
-    public MainGameScreen(){
+    private OrthographicCamera _hudCamera = null;
+    private InputMultiplexer _multiplexer;
+    private static PlayerHUD _playerHUD;
+
+    public MainGameScreen(BludBourne game){
+        _game = game;
         _mapMgr = new MapManager();
         _json = new Json();
+
+        _hudCamera = new OrthographicCamera();
+        _hudCamera.setToOrtho(false, VIEWPORT.physicalWidth, VIEWPORT.physicalHeight);
+
+        _playerHUD = new PlayerHUD(_hudCamera, _player);
+
+        _multiplexer = new InputMultiplexer();
+        _multiplexer.addProcessor(_playerHUD.getStage());
+        _multiplexer.addProcessor(_player.getInputProcessor());
+        Gdx.input.setInputProcessor(_multiplexer);
     }
 
     private static Entity _player;

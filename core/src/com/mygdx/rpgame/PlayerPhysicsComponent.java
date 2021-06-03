@@ -66,7 +66,8 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
             _isMouseSelectEnabled = false;
         }
 
-        if (!isCollisionWithMapLayer(entity, mapMgr) && !isCollisionWithMapEntities(entity, mapMgr)
+        if (!isCollisionWithMapLayer(entity, mapMgr) &&
+                !isCollisionWithMapEntities(entity, mapMgr)
                 && _state == Entity.State.WALKING){
             setNextPositionToCurrent(entity);
 
@@ -78,6 +79,40 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
         }
 
         calculateNextPosition(delta);
+    }
+
+    private void selectMapEntityCandidate(MapManager mapMgr){
+        Array<Entity> currentEntities = mapMgr.getCurrentMapEntities();
+
+        //Convert screen coordinates to world coordinates,
+        //then to unit scale coordinates
+        mapMgr.getCamera().unproject(_mouseSelectCoordinates);
+        _mouseSelectCoordinates.x /= Map.UNIT_SCALE;
+        _mouseSelectCoordinates.y /= Map.UNIT_SCALE;
+
+//        Gdx.app.debug(TAG, "Mouse Coordinates " + "("
+//                + _mouseSelectCoordinates.x + "," + _mouseSelectCoordinates.y + ")");
+
+        for (Entity mapEntity : currentEntities){
+            //Don't break, reset all entities
+            mapEntity.sendMessage(MESSAGE.ENTITY_DESELECTED);
+            Rectangle mapEntityBoundingBox = mapEntity.getCurrentBoundingBox();
+            //Gdx.app.debug(TAG, "Entity Candidate Location " + "(" + mapEntityBoundingBox.x + "," + mapEntityBoundingBox.y + ")");
+            if (mapEntity.getCurrentBoundingBox().contains(_mouseSelectCoordinates.x, _mouseSelectCoordinates.y)){
+                //Check distance
+                _selectionRay.set(_boundingBox.x, _boundingBox.y, 0.0f,
+                        mapEntityBoundingBox.x, mapEntityBoundingBox.y, 0.0f);
+                float distance = _selectionRay.origin.dst(_selectionRay.direction);
+
+                if (distance <= _selectRayMaximumDistance){
+                    //We have a valid entity selection
+                    //Picked/Selected
+                    Gdx.app.debug(TAG, "Selected Entity! " +
+                            mapEntity.getEntityConfig().getEntityID());
+                    mapEntity.sendMessage(MESSAGE.ENTITY_SELECTED);
+                }
+            }
+        }
     }
 
     private boolean updatePortalLayerActivation(MapManager mapMgr){
@@ -116,37 +151,5 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
         return false;
     }
 
-    private void selectMapEntityCandidate(MapManager mapMgr){
-        Array<Entity> currentEntities = mapMgr.getCurrentMapEntities();
 
-        //Convert screen coordinates to world coordinates,
-        //then to unit scale coordinates
-        mapMgr.getCamera().unproject(_mouseSelectCoordinates);
-        _mouseSelectCoordinates.x /= Map.UNIT_SCALE;
-        _mouseSelectCoordinates.y /= Map.UNIT_SCALE;
-
-//        Gdx.app.debug(TAG, "Mouse Coordinates " + "("
-//                + _mouseSelectCoordinates.x + "," + _mouseSelectCoordinates.y + ")");
-
-        for (Entity mapEntity : currentEntities){
-            //Don't break, reset all entities
-            mapEntity.sendMessage(MESSAGE.ENTITY_DESELECTED);
-            Rectangle mapEntityBoundingBox = mapEntity.getCurrentBoundingBox();
-
-            if (mapEntity.getCurrentBoundingBox().contains(_mouseSelectCoordinates.x, _mouseSelectCoordinates.y)){
-                //Check distance
-                _selectionRay.set(_boundingBox.x, _boundingBox.y, 0.0f,
-                        mapEntityBoundingBox.x, mapEntityBoundingBox.y, 0.0f);
-                float distance = _selectionRay.origin.dst(_selectionRay.direction);
-
-                if (distance <= _selectRayMaximumDistance){
-                    //We have a valid entity selection
-                    //Picked/Selected
-                    Gdx.app.debug(TAG, "Selected Entity! " +
-                            mapEntity.getEntityConfig().getEntityID());
-                    mapEntity.sendMessage(MESSAGE.ENTITY_SELECTED);
-                }
-            }
-        }
-    }
 }

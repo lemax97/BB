@@ -6,11 +6,12 @@ import com.badlogic.gdx.Game;
 
 public class BludBourne extends Game {
 
-	public static final MainGameScreen _mainGameScreen = new MainGameScreen();
+	public static MainGameScreen _mainGameScreen;
 
 	@Override
 	public void create() {
-		setScreen((Screen) _mainGameScreen);
+		_mainGameScreen = new MainGameScreen(this);
+		setScreen(_mainGameScreen);
 	}
 
 	@Override

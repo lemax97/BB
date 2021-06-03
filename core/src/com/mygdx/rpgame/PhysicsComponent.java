@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Json;
 
 public abstract class PhysicsComponent implements Component{
     private static final String TAG = PhysicsComponent.class.getSimpleName();
+
     public abstract void update(Entity entity, MapManager mapMgr, float delta);
 
     protected Vector2 _nextEntityPosition;
@@ -23,7 +24,7 @@ public abstract class PhysicsComponent implements Component{
     public Rectangle _boundingBox;
     protected BoundingBoxLocation _boundingBoxLocation;
 
-    public static enum BoundingBoxLocation{
+    public enum BoundingBoxLocation{
         BOTTOM_LEFT,
         BOTTOM_CENTER,
         CENTER,
@@ -31,8 +32,8 @@ public abstract class PhysicsComponent implements Component{
 
     PhysicsComponent(){
         this._nextEntityPosition = new Vector2(0,0);
-        this._currentEntityPosition = new Vector2(0, 0);
-        this._velocity = new Vector2(2f, 2f);
+        this._currentEntityPosition = new Vector2(0,0);
+        this._velocity = new Vector2(2f,2f);
         this._boundingBox = new Rectangle();
         this._json = new Json();
         _boundingBoxLocation = BoundingBoxLocation.BOTTOM_LEFT;
@@ -61,6 +62,7 @@ public abstract class PhysicsComponent implements Component{
 
     protected boolean isCollision(Entity entitySource, Entity entityTarget){
         boolean isCollisionWithMapEntities = false;
+
         if (entitySource.equals(entityTarget)){
             return false;
         }
@@ -77,7 +79,9 @@ public abstract class PhysicsComponent implements Component{
     protected boolean isCollisionWithMapLayer(Entity entity, MapManager mapMgr){
         MapLayer mapCollisionLayer = mapMgr.getCollisionLayer();
 
-        if (mapCollisionLayer == null) return false;
+        if (mapCollisionLayer == null) {
+            return false;
+        }
 
         Rectangle rectangle = null;
 
@@ -99,8 +103,7 @@ public abstract class PhysicsComponent implements Component{
         this._currentEntityPosition.x = _nextEntityPosition.x;
         this._currentEntityPosition.y = _nextEntityPosition.y;
 
-//        Gdx.app.debug(TAG, "SETTING Current Position " + entity.getEntityConfig().getEntityID() +
-//                ": (" + _currentEntityPosition.x + "," + _currentEntityPosition.y + ")");
+        //Gdx.app.debug(TAG, "SETTING Current Position " + entity.getEntityConfig().getEntityID() + ": (" + _currentEntityPosition.x + "," + _currentEntityPosition.y + ")");
         entity.sendMessage(MESSAGE.CURRENT_POSITION, _json.toJson(_currentEntityPosition));
     }
 
@@ -193,11 +196,12 @@ public abstract class PhysicsComponent implements Component{
                 _boundingBox.setCenter(minX + origWidth / 2, minY + origHeight / 2);
                 break;
         }
+
+        //Gdx.app.debug(TAG, "SETTING Bounding Box for " + entity.getEntityConfig().getEntityID() + ": (" + minX + "," + minY + ")  width: " + width + " height: " + height);
     }
 
     protected void updateBoundingBoxPosition(Vector2 position){
-        //Need to account for the unitscale, since the map
-        //coordinates will be in pixels
+        //Need to account for the unitscale, since the map coordinates will be in pixels
         float minX;
         float minY;
 
@@ -221,7 +225,6 @@ public abstract class PhysicsComponent implements Component{
                 break;
         }
 
-//        Gdx.app.debug(TAG, "SETTING Bounding Box for " + entity.getEntityConfig().getEntityID()
-//                + ": (" + minX + "," + minY + ") width: " + width + " height: " + height);
+        //Gdx.app.debug(TAG, "SETTING Bounding Box for " + entity.getEntityConfig().getEntityID() + ": (" + minX + "," + minY + ")  width: " + width + " height: " + height);
     }
 }

@@ -2,7 +2,6 @@ package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -73,7 +72,7 @@ public class MapManager {
         return this._player;
     }
 
-    public void setCamera(OrthographicCamera camera) {
+    public void setCamera(Camera camera) {
         this._camera = camera;
     }
 

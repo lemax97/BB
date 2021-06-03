@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Json;
 import java.util.Hashtable;
 
 public abstract class Map {
-    protected static final String TAG = Map.class.getSimpleName();
+    private static final String TAG = Map.class.getSimpleName();
 
     public final static float UNIT_SCALE = 1/16f;
 

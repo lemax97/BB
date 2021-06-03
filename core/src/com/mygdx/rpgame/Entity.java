@@ -1,6 +1,7 @@
 package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -8,20 +9,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+
 import java.util.ArrayList;
 
 public class Entity {
-
     private static final String TAG = Entity.class.getSimpleName();
     private Json _json;
     private EntityConfig _entityConfig;
 
-    public static enum Direction {
+    public enum Direction {
         UP,
         RIGHT,
         DOWN,
         LEFT;
-
 
         static public Direction getRandomNext() {
             return Direction.values()[MathUtils.random(Direction.values().length - 1)];
@@ -40,7 +40,7 @@ public class Entity {
         }
     }
 
-    public static enum State {
+    public enum State {
         IDLE,
         WALKING,
 
@@ -52,7 +52,7 @@ public class Entity {
         }
     }
 
-    public static enum AnimationType{
+    public enum AnimationType{
         WALK_LEFT,
         WALK_RIGHT,
         WALK_UP,
@@ -76,7 +76,7 @@ public class Entity {
         _entityConfig = new EntityConfig();
         _json = new Json();
 
-        _components = new Array<Component>(MAX_COMPONENTS);
+        _components = new Array<>(MAX_COMPONENTS);
 
         _inputComponent = inputComponent;
         _physicsComponent = physicsComponent;
@@ -119,6 +119,10 @@ public class Entity {
         return _physicsComponent._boundingBox;
     }
 
+    public InputProcessor getInputProcessor() {
+        return (InputProcessor) _inputComponent;
+    }
+
     public void setEntityConfig(EntityConfig entityConfig){
         this._entityConfig = entityConfig;
     }
@@ -130,7 +134,7 @@ public class Entity {
 
     static public Array<EntityConfig> getEntityConfigs(String configFilePath){
         Json json = new Json();
-        Array<EntityConfig> configs = new Array<EntityConfig>();
+        Array<EntityConfig> configs = new Array<>();
         ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(configFilePath));
 
         for (JsonValue jsonVal : list){

@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 
 public class NPCInputComponent extends InputComponent implements InputProcessor {
-    private final static String TAG = NPCInputComponent.class.getSimpleName();
+    private static final  String TAG = NPCInputComponent.class.getSimpleName();
 
     private float _frameTime = 0.0f;
 

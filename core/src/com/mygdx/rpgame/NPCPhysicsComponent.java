@@ -1,8 +1,6 @@
 package com.mygdx.rpgame;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 public class NPCPhysicsComponent extends PhysicsComponent {
     private static final String TAG = NPCPhysicsComponent.class.getSimpleName();
@@ -44,7 +42,8 @@ public class NPCPhysicsComponent extends PhysicsComponent {
 
         if (_state == Entity.State.IMMOBILE) return;
 
-        if (!isCollisionWithMapLayer(entity, mapMgr) && !isCollisionWithMapEntities(entity, mapMgr)
+        if (!isCollisionWithMapLayer(entity, mapMgr) &&
+                !isCollisionWithMapEntities(entity, mapMgr)
                 && _state == Entity.State.WALKING){
             setNextPositionToCurrent(entity);
         }else {
