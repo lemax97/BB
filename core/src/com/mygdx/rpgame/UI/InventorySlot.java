@@ -36,4 +36,8 @@ public class InventorySlot extends Stack {
     public boolean hasItem() {
         return false;
     }
+
+    public int getNumItems() {
+        return 0;
+    }
 }

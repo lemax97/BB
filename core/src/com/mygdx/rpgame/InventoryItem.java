@@ -40,6 +40,8 @@ public class InventoryItem extends Image {
         ;
     }
 
+    private ItemTypeID itemTypeID;
+
     public int getItemUseType() {
         return 0;
     }
@@ -50,5 +52,9 @@ public class InventoryItem extends Image {
 
     public boolean isStackable() {
         return true;
+    }
+
+    public ItemTypeID getItemTypeID() {
+        return itemTypeID;
     }
 }

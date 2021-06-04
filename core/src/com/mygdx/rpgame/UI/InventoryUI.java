@@ -110,4 +110,19 @@ public class InventoryUI extends Window {
             }
         }
     }
+
+    public Array<InventoryItemLocation> getInventory(Table targetTable){
+        Array<Cell> cells = targetTable.getCells();
+        Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
+        for (int i = 0; i < cells.size; i++) {
+            InventorySlot inventorySlot = ((InventorySlot)cells.get(i).getActor());
+            if (inventorySlot == null) continue;
+            int numItems = inventorySlot.getNumItems();
+            if (numItems > 0){
+                items.add(new InventoryItemLocation(i,
+                        inventorySlot.getTopInventoryItem().getItemTypeID().toString(), numItems));
+            }
+        }
+        return items;
+    }
 }

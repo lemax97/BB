@@ -5,6 +5,12 @@ public class InventoryItemLocation {
     private String itemTypeAtLocation;
     private int numberItemsAtLocation;
 
+    public InventoryItemLocation(int locationIndex, String itemTypeAtLocation, int numberItemsAtLocation) {
+        this.locationIndex = locationIndex;
+        this.itemTypeAtLocation = itemTypeAtLocation;
+        this.numberItemsAtLocation = numberItemsAtLocation;
+    }
+
     public String getItemTypeAtLocation() {
         return itemTypeAtLocation;
     }
