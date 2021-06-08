@@ -1,7 +1,9 @@
 package com.mygdx.rpgame.UI;
 
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rpgame.InventoryItem.ItemTypeID;
 import com.mygdx.rpgame.InventoryItem.ItemUseType;
@@ -15,12 +17,19 @@ public class InventoryUI extends Window {
     private Table _inventorySlotTable;
     private Table _playerSlotTable;
     private Table _equipSlots;
+    private DragAndDrop _dragAndDrop;
+    private Array<Actor> _inventoryActors;
 
     private final int _slotWidth = 52;
     private final int _slotHeight = 52;
 
+    private InventorySlotTooltip _inventorySlotTooltip;
+
     public InventoryUI() {
         super("Inventory", Utility.STATUSUI_SKIN, "solidbackground");
+
+        _dragAndDrop = new DragAndDrop();
+        _inventoryActors = new Array<Actor>();
 
         //create
         _inventorySlotTable = new Table();
@@ -31,6 +40,7 @@ public class InventoryUI extends Window {
         _equipSlots.setName("Equipment_Slot_Table");
 
         _equipSlots.defaults().space(10);
+        _inventorySlotTooltip = new InventorySlotTooltip(Utility.STATUSUI_SKIN);
 
         InventorySlot headSlot = new InventorySlot(ItemUseType.ARMOR_HELMET.getValue(),
                 new Image(Utility.ITEMS_TEXTUREATLAS.findRegion("inv_helmet")));
@@ -57,12 +67,27 @@ public class InventoryUI extends Window {
         InventorySlot legsSlot = new InventorySlot(ItemUseType.ARMOR_FEET.getValue(),
                 new Image(Utility.ITEMS_TEXTUREATLAS.findRegion("inv_boot")));
 
+        headSlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+        leftArmSlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+        rightArmSlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+        chestSlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+        legsSlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+
+        _dragAndDrop.addTarget(new InventorySlotTarget(headSlot));
+        _dragAndDrop.addTarget(new InventorySlotTarget(leftArmSlot));
+        _dragAndDrop.addTarget(new InventorySlotTarget(chestSlot));
+        _dragAndDrop.addTarget(new InventorySlotTarget(rightArmSlot));
+        _dragAndDrop.addTarget(new InventorySlotTarget(legsSlot));
+
         _playerSlotTable.setBackground(new Image(
                 new NinePatch(Utility.STATUSUI_TEXTUREATLAS.createPatch("dialog"))).getDrawable());
 
         //layout
         for (int i = 1; i <= _numSlots; i++) {
             InventorySlot inventorySlot = new InventorySlot();
+            inventorySlot.addListener(new InventorySlotTooltipListener(_inventorySlotTooltip));
+            _dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
+
             _inventorySlotTable.add(inventorySlot).size(_slotWidth, _slotHeight);
 
             if (i % _lengthSlotRow == 0){
@@ -83,6 +108,8 @@ public class InventoryUI extends Window {
         _equipSlots.right().add(legsSlot).size(_slotWidth, _slotHeight);
 
         _playerSlotTable.add(_equipSlots);
+
+        _inventoryActors.add(_inventorySlotTooltip);
 
         this.add(_playerSlotTable).padBottom(20).row();
         this.add(_inventorySlotTable).row();
@@ -107,6 +134,7 @@ public class InventoryUI extends Window {
 
             for (int index = 0; index < itemLocation.getNumberItemsAtLocation(); index++) {
                 inventorySlot.add(InventoryItemFactory.getInstace().getInventoryItem(itemTypeID));
+                _dragAndDrop.addSource(new InventorySlotSource(inventorySlot, _dragAndDrop));
             }
         }
     }
@@ -124,5 +152,9 @@ public class InventoryUI extends Window {
             }
         }
         return items;
+    }
+
+    public Array<Actor> getInventoryActors(){
+        return _inventoryActors;
     }
 }
