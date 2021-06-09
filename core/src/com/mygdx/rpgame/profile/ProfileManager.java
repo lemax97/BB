@@ -106,4 +106,12 @@ public class ProfileManager extends ProfileSubject{
         _profileProperties = _json.fromJson(ObjectMap.class, _profiles.get(_profileName));
         notify(this, ProfileObserver.ProfileEvent.PROFILE_LOADED);
     }
+
+    public void setCurrentProfile(String profileName){
+        if (doesProfileExist(profileName)){
+            _profileName = profileName;
+        } else {
+            _profileName = DEFAULT_PROFILE;
+        }
+    }
 }
