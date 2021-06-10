@@ -4,9 +4,11 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
 
 import com.mygdx.rpgame.Entity.AnimationType;
+import com.mygdx.rpgame.InventoryItem.ItemTypeID;
 
 public class EntityConfig {
     Array<AnimationConfig> animationConfig;
+    Array<ItemTypeID> inventory;
     Entity.State state = Entity.State.IDLE;
     Entity.Direction direction = Entity.Direction.DOWN;
     String entityID;
@@ -45,6 +47,10 @@ public class EntityConfig {
 
     public void addAnimationConfig(AnimationConfig animationConfig){
         this.animationConfig.add(animationConfig);
+    }
+
+    public Array<ItemTypeID> getInventory(){
+        return inventory;
     }
 
     static public class AnimationConfig{

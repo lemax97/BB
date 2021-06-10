@@ -48,7 +48,7 @@ public class ProfileManager extends ProfileSubject{
         return _profiles.get(profile);
     }
 
-    private void storeAllProfiles() {
+    public void storeAllProfiles() {
         if (Gdx.files.isLocalStorageAvailable()){
             FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
 
@@ -61,7 +61,7 @@ public class ProfileManager extends ProfileSubject{
         }
     }
 
-    private boolean doesProfileExist(String profileName) {
+    public boolean doesProfileExist(String profileName) {
         return _profiles.containsKey(profileName);
     }
 
