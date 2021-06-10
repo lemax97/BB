@@ -1,8 +1,25 @@
 package com.mygdx.rpgame;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class InventoryItem extends Image {
+
+    public enum ItemAttribute{
+        CONSUMABLE(1),
+        EQUPPABLE(2),
+        STACKABLE(4);
+
+        private int _attribute;
+
+        ItemAttribute(int attribute){
+            this._attribute = attribute;
+        }
+
+        public int getValue(){
+            return _attribute;
+        }
+    }
 
     public enum ItemUseType{
         ITEM_RESTORE_HEALTH(1),
@@ -40,21 +57,68 @@ public class InventoryItem extends Image {
         ;
     }
 
+    private int itemAttributes;
+    private int itemUseType;
     private ItemTypeID itemTypeID;
+    private String itemShortDescription;
+
+    public InventoryItem(TextureRegion textureRegion, int itemAttributes, ItemTypeID itemTypeID, int itemUseType){
+        super(textureRegion);
+
+        this.itemTypeID = itemTypeID;
+        this.itemAttributes = itemAttributes;
+        this.itemUseType = itemUseType;
+    }
+
+    public InventoryItem(){
+        super();
+    }
+
+    public InventoryItem(InventoryItem inventoryItem){
+        super();
+        this.itemTypeID = inventoryItem.getItemTypeID();
+        this.itemAttributes = inventoryItem.getItemAttributes();
+        this.itemUseType = inventoryItem.getItemUseType();
+        this.itemShortDescription = inventoryItem.getItemShortDescription();
+    }
+
+    public ItemTypeID getItemTypeID(){
+        return itemTypeID;
+    }
+
+    public void setItemTypeID(ItemTypeID itemTypeID) {
+        this.itemTypeID = itemTypeID;
+    }
+
+    public int getItemAttributes() {
+        return itemAttributes;
+    }
+
+    public void setItemAttributes(int itemAttributes) {
+        this.itemAttributes = itemAttributes;
+    }
 
     public int getItemUseType() {
-        return 0;
+        return itemUseType;
     }
 
-    public boolean isSameItemType(InventoryItem targetActor) {
-        return true;
+    public void setItemUseType(int itemUseType) {
+        this.itemUseType = itemUseType;
     }
 
-    public boolean isStackable() {
-        return true;
+    public String getItemShortDescription() {
+        return itemShortDescription;
     }
 
-    public ItemTypeID getItemTypeID() {
-        return itemTypeID;
+    public void setItemShortDescription(String itemShortDescription) {
+        this.itemShortDescription = itemShortDescription;
+    }
+
+    public boolean isStackable(){
+        return ((itemAttributes & ItemAttribute.STACKABLE.getValue()) == ItemAttribute.STACKABLE.getValue());
+    }
+
+    public boolean isSameItemType(InventoryItem candidateInventoryItem){
+        return itemTypeID == candidateInventoryItem.getItemTypeID();
     }
 }

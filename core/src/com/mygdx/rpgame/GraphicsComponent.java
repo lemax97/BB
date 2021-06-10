@@ -36,7 +36,7 @@ public abstract class GraphicsComponent implements Component{
 
     protected void updateAnimations(float delta){
         //Want to avoid overflow
-        _frameTime = (_frameTime + delta) % 5;
+        _frameTime = (_frameTime + delta) % 5; //Want to avoid overflow
 
         //Look into the appropriate  variable
         //when changing position

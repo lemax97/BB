@@ -15,6 +15,7 @@ public class EntityConfig {
 
     EntityConfig(){
         animationConfig = new Array<AnimationConfig>();
+        inventory = new Array<>();
     }
 
     public String getEntityID(){
@@ -53,11 +54,15 @@ public class EntityConfig {
         return inventory;
     }
 
+    public void setInventory(Array<ItemTypeID> inventory){
+        this.inventory = inventory;
+    }
+
     static public class AnimationConfig{
         private float frameDuration = 1.0f;
         private AnimationType animationType;
-        private Array<GridPoint2> gridPoints;
         private Array<String> texturePaths;
+        private Array<GridPoint2> gridPoints;
 
         public AnimationConfig(){
             animationType = AnimationType.IDLE;

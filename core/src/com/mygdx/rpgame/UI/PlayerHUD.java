@@ -133,6 +133,4 @@ public class PlayerHUD implements Screen, ProfileObserver {
         _stage.dispose();
     }
 
-
-
 }
