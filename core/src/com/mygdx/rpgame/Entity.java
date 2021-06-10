@@ -17,6 +17,7 @@ public class Entity {
     private Json _json;
     private EntityConfig _entityConfig;
 
+
     public enum Direction {
         UP,
         RIGHT,
@@ -107,6 +108,10 @@ public class Entity {
         _inputComponent.update(this, delta);
         _physicsComponent.update(this, mapMgr, delta);
         _graphicsComponent.update(this, mapMgr, batch, delta);
+    }
+
+    public void updateInput(float delta) {
+        _inputComponent.update(this, delta);
     }
 
     public void dispose(){

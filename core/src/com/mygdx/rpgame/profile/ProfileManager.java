@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -50,7 +51,13 @@ public class ProfileManager extends ProfileSubject{
     private void storeAllProfiles() {
         if (Gdx.files.isLocalStorageAvailable()){
             FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
-            for (FileHandle file: files) _profiles.put(file.nameWithoutExtension(), file);
+
+            for (FileHandle file: files) {
+                _profiles.put(file.nameWithoutExtension(), file);
+            }
+        } else {
+            //TODO: try external directory here
+            return;
         }
     }
 
