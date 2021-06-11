@@ -11,7 +11,7 @@ import com.mygdx.rpgame.EntityConfig.AnimationConfig;
 
 public class PlayerGraphicsComponent extends GraphicsComponent{
 
-    private static final String TAG = PlayerGraphicsComponent.class.getSimpleName();
+//    private static final String TAG = PlayerGraphicsComponent.class.getSimpleName();
 
     public PlayerGraphicsComponent(){
     }

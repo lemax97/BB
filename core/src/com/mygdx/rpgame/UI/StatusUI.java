@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.rpgame.Utility;
 

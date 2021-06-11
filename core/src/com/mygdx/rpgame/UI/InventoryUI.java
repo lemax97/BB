@@ -1,13 +1,16 @@
 package com.mygdx.rpgame.UI;
 
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.rpgame.InventoryItem.ItemTypeID;
-import com.mygdx.rpgame.InventoryItem.ItemUseType;
 import com.mygdx.rpgame.InventoryItemFactory;
+import com.mygdx.rpgame.InventoryItem.ItemUseType;
+import com.mygdx.rpgame.InventoryItem.ItemTypeID;
 import com.mygdx.rpgame.Utility;
 
 public class InventoryUI extends Window {
@@ -15,7 +18,7 @@ public class InventoryUI extends Window {
     private int _numSlots = 50;
     private int _lengthSlotRow = 10;
     private Table _inventorySlotTable;
-    private Table _playerSlotTable;
+    private Table _playerSlotsTable;
     private Table _equipSlots;
     private DragAndDrop _dragAndDrop;
     private Array<Actor> _inventoryActors;
@@ -35,7 +38,7 @@ public class InventoryUI extends Window {
         _inventorySlotTable = new Table();
         _inventorySlotTable.setName("Inventory_Slot_Table");
 
-        _playerSlotTable = new Table();
+        _playerSlotsTable = new Table();
         _equipSlots = new Table();
         _equipSlots.setName("Equipment_Slot_Table");
 
@@ -79,7 +82,7 @@ public class InventoryUI extends Window {
         _dragAndDrop.addTarget(new InventorySlotTarget(rightArmSlot));
         _dragAndDrop.addTarget(new InventorySlotTarget(legsSlot));
 
-        _playerSlotTable.setBackground(new Image(
+        _playerSlotsTable.setBackground(new Image(
                 new NinePatch(Utility.STATUSUI_TEXTUREATLAS.createPatch("dialog"))).getDrawable());
 
         //layout
@@ -107,11 +110,11 @@ public class InventoryUI extends Window {
         _equipSlots.add();
         _equipSlots.right().add(legsSlot).size(_slotWidth, _slotHeight);
 
-        _playerSlotTable.add(_equipSlots);
+        _playerSlotsTable.add(_equipSlots);
 
         _inventoryActors.add(_inventorySlotTooltip);
 
-        this.add(_playerSlotTable).padBottom(20).row();
+        this.add(_playerSlotsTable).padBottom(20).row();
         this.add(_inventorySlotTable).row();
         this.pack();
     }

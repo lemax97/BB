@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class NPCGraphicsComponent extends GraphicsComponent{
-    private static final String TAG = NPCGraphicsComponent.class.getSimpleName();
+//    private static final String TAG = NPCGraphicsComponent.class.getSimpleName();
 
     private boolean _isSelected = false;
 
@@ -82,11 +82,11 @@ public class NPCGraphicsComponent extends GraphicsComponent{
         //Used to graphically debug boundingboxes
        /*
         Rectangle rect = entity.getCurrentBoundingBox();
+        Camera camera = mapMgr.getCamera();
         _shapeRenderer.setProjectionMatrix(camera.combined);
         _shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        _shapeRenderer.setColor(Color.RED);
-        _shapeRenderer.rect(rect.getX() * Map.UNIT_SCALE, rect.getY() * Map.UNIT_SCALE,
-                rect.getWidth() * Map.UNIT_SCALE, rect.getHeight() * Map.UNIT_SCALE);
+        _shapeRenderer.setColor(Color.BLACK);
+        _shapeRenderer.rect(rect.getX() * Map.UNIT_SCALE, rect.getY() * Map.UNIT_SCALE, rect.getWidth() * Map.UNIT_SCALE, rect.getHeight() * Map.UNIT_SCALE);
         _shapeRenderer.end();
         */
     }
@@ -102,7 +102,6 @@ public class NPCGraphicsComponent extends GraphicsComponent{
 
         float width = rect.getWidth() * Map.UNIT_SCALE * 2f;
         float height = rect.getHeight() * Map.UNIT_SCALE / 2f;
-
         float x = rect.x * Map.UNIT_SCALE - width / 4;
         float y = rect.y * Map.UNIT_SCALE - height / 2;
 

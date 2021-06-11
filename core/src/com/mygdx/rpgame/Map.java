@@ -45,7 +45,7 @@ public abstract class Map {
 
     Map(MapFactory.MapType mapType, String fullMapPath){
         _json = new Json();
-        _mapEntities = new Array<Entity>(10);
+        _mapEntities = new Array<>(10);
         _currentMapType = mapType;
         _playerStart = new Vector2(0, 0);
         _playerStartPositionRect = new Vector2(0, 0);
@@ -94,6 +94,10 @@ public abstract class Map {
         return _playerStart;
     }
 
+    public void setPlayerStart(Vector2 playerStart){
+        this._playerStart = playerStart;
+    }
+
     public abstract void updateMapEntities(MapManager mapMgr, Batch batch, float delta);
 
     public MapLayer getCollisionLayer(){
@@ -115,7 +119,7 @@ public abstract class Map {
     }
 
     private Array<Vector2> getNPCStartPositions(){
-        Array<Vector2> npcStartPositions = new Array<Vector2>();
+        Array<Vector2> npcStartPositions = new Array<>();
 
         for (MapObject object: _spawnsLayer.getObjects()){
             String objectName = object.getName();
@@ -140,7 +144,7 @@ public abstract class Map {
     }
 
     private Hashtable<String, Vector2> getSpecialNPCStartPositions(){
-        Hashtable<String, Vector2> specialNPCStartPositions = new Hashtable<String, Vector2>();
+        Hashtable<String, Vector2> specialNPCStartPositions = new Hashtable<>();
 
         for (MapObject object: _spawnsLayer.getObjects()){
             String objectName = object.getName();
@@ -204,7 +208,7 @@ public abstract class Map {
     }
 
     public void setClosestStartPositionFromScaledUnits(Vector2 position){
-        if (UNIT_SCALE <= 0) return;
+//        if (UNIT_SCALE <= 0) return;
 
         _convertedUnits.set(position.x / UNIT_SCALE, position.y / UNIT_SCALE);
         setClosestStartPosition(_convertedUnits);

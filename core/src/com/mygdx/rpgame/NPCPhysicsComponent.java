@@ -3,7 +3,7 @@ package com.mygdx.rpgame;
 import com.badlogic.gdx.math.Vector2;
 
 public class NPCPhysicsComponent extends PhysicsComponent {
-    private static final String TAG = NPCPhysicsComponent.class.getSimpleName();
+//    private static final String TAG = NPCPhysicsComponent.class.getSimpleName();
 
     private Entity.State _state;
 
@@ -59,10 +59,6 @@ public class NPCPhysicsComponent extends PhysicsComponent {
             return true;
         }
 
-        if (super.isCollisionWithMapEntities(entity, mapMgr)){
-            return true;
-        }
-
-        return false;
+        return super.isCollisionWithMapEntities(entity, mapMgr);
     }
 }

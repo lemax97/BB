@@ -24,7 +24,7 @@ public abstract class PhysicsComponent implements Component{
     public Rectangle _boundingBox;
     protected BoundingBoxLocation _boundingBoxLocation;
 
-    public enum BoundingBoxLocation{
+    public static enum BoundingBoxLocation{
         BOTTOM_LEFT,
         BOTTOM_CENTER,
         CENTER,
@@ -147,11 +147,8 @@ public abstract class PhysicsComponent implements Component{
         float origWidth = Entity.FRAME_WIDTH;
         float origHeight = Entity.FRAME_HEIGHT;
 
-        //.8f for 20% (1 - .20)
-        float widthReductionAmount = 1.0f - percentageWidthReduced;
-
-        //.8f for 20% (1 - .20)
-        float heightReductionAmount = 1.0f - percentageHeightReduced;
+        float widthReductionAmount = 1.0f - percentageWidthReduced;//.8f for 20% (1 - .20)
+        float heightReductionAmount = 1.0f - percentageHeightReduced; //.8f for 20% (1 - .20)
 
         if( widthReductionAmount > 0 && widthReductionAmount < 1){
             width = Entity.FRAME_WIDTH * widthReductionAmount;

@@ -29,6 +29,7 @@ public class PlayerHUD implements Screen, ProfileObserver {
         _player = player;
         _viewport = new ScreenViewport(_camera);
         _stage = new Stage(_viewport);
+        //_stage.setDebugAll(true);
 
         _statusUI = new StatusUI();
         _statusUI.setVisible(true);

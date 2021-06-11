@@ -5,6 +5,9 @@ public class InventoryItemLocation {
     private String itemTypeAtLocation;
     private int numberItemsAtLocation;
 
+    public InventoryItemLocation(){
+    }
+
     public InventoryItemLocation(int locationIndex, String itemTypeAtLocation, int numberItemsAtLocation) {
         this.locationIndex = locationIndex;
         this.itemTypeAtLocation = itemTypeAtLocation;
@@ -15,11 +18,23 @@ public class InventoryItemLocation {
         return itemTypeAtLocation;
     }
 
+    public void setItemTypeAtLocation(String itemTypeAtLocation){
+        this.itemTypeAtLocation = itemTypeAtLocation;
+    }
+
     public int getLocationIndex() {
         return locationIndex;
     }
 
+    public void setLocationIndex(int locationIndex){
+        this.locationIndex = locationIndex;
+    }
+
     public int getNumberItemsAtLocation(){
         return numberItemsAtLocation;
+    }
+
+    public void setNumberItemsAtLocation(int numberItemsAtLocation){
+        this.numberItemsAtLocation = numberItemsAtLocation;
     }
 }

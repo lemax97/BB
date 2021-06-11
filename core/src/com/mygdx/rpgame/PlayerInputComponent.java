@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.rpgame.screens.MainGameScreen;
 
 public class PlayerInputComponent extends InputComponent implements InputProcessor {
 
@@ -38,7 +39,11 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
     @Override
     public void update(Entity entity, float delta) {
         //Keyboard input
-        if (keys.get(Keys.LEFT)){
+        if (keys.get(Keys.PAUSE)){
+            System.out.println("INPUT PAUSED");
+            MainGameScreen.setGameState(MainGameScreen.GameState.PAUSED);
+            pauseReleased();
+        } else if (keys.get(Keys.LEFT)){
             entity.sendMessage(MESSAGE.CURRENT_STATE, _json.toJson(Entity.State.WALKING));
             entity.sendMessage(MESSAGE.CURRENT_DIRECTION, _json.toJson(Entity.Direction.LEFT));
         }else if (keys.get(Keys.RIGHT)) {
@@ -50,8 +55,10 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         } else if (keys.get(Keys.DOWN)) {
             entity.sendMessage(MESSAGE.CURRENT_STATE, _json.toJson(Entity.State.WALKING));
             entity.sendMessage(MESSAGE.CURRENT_DIRECTION, _json.toJson(Entity.Direction.DOWN));
-        } else if (keys.get(Keys.QUIT)) Gdx.app.exit();
-        else {
+        } else if (keys.get(Keys.QUIT)) {
+            quitReleased();
+            Gdx.app.exit();
+        }else {
             entity.sendMessage(MESSAGE.CURRENT_STATE, _json.toJson(Entity.State.IDLE));
             if (_currentDirection == null){
                 entity.sendMessage(MESSAGE.CURRENT_DIRECTION, _json.toJson(Entity.Direction.DOWN));
@@ -83,6 +90,10 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         if (keycode == Input.Keys.ESCAPE){
             this.quitPressed();
         }
+        if (keycode == Input.Keys.P){
+            this.pausePressed();
+        }
+
         return true;
     }
 
@@ -104,7 +115,9 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         if (keycode == Input.Keys.ESCAPE){
             this.quitReleased();
         }
-
+        if (keycode == Input.Keys.P){
+            this.pauseReleased();
+        }
         return true;
     }
 
@@ -127,7 +140,8 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         if ( button == Input.Buttons.RIGHT){
             this.doActionMouseButtonPressed(screenX, screenY);
         }
-        return true;    }
+        return true;
+    }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -138,7 +152,8 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         if ( button == Input.Buttons.RIGHT){
             this.doActionMouseButtonReleased(screenX, screenY);
         }
-        return true;    }
+        return true;
+    }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
@@ -176,6 +191,10 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         keys.put(Keys.QUIT, true);
     }
 
+    public void pausePressed(){
+        keys.put(Keys.PAUSE, true);
+    }
+
     public void setClickedMouseCoordinates(int x, int y){
         _lastMouseCoordinates.set(x, y, 0);
     }
@@ -210,6 +229,8 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         keys.put(Keys.QUIT, false);
     }
 
+    public void pauseReleased(){ keys.put(Keys.PAUSE, false);}
+
     public void selectMouseButtonReleased(int x, int y){
         mouseButtons.put(Mouse.SELECT, false);
     }
@@ -218,7 +239,7 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
         mouseButtons.put(Mouse.DO_ACTION, false);
     }
 
-    public static void hide(){
+    public static void clear(){
         keys.put(Keys.LEFT, false);
         keys.put(Keys.RIGHT, false);
         keys.put(Keys.UP, false);

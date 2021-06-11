@@ -1,8 +1,8 @@
 package com.mygdx.rpgame.UI;
 
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.mygdx.rpgame.InventoryItem;
 
 public class InventorySlotTarget extends Target {
