@@ -50,8 +50,8 @@ public class ProfileManager extends ProfileSubject{
 
     public void storeAllProfiles() {
         if (Gdx.files.isLocalStorageAvailable()){
+//            FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
             FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
-
             for (FileHandle file: files) {
                 _profiles.put(file.nameWithoutExtension(), file);
             }
