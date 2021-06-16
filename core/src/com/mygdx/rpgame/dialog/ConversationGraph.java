@@ -43,6 +43,22 @@ public class ConversationGraph extends ConversationGraphSubject {
         return this.currentConversationID;
     }
 
+    public void setCurrentConversation(String id){
+        Conversation conversation = getConversationByID(id);
+        if (conversation == null ) return;
+        //Can we reach the new conversation from the current one?
+
+        //Make sure we check case
+        //where the current node is checked against itself
+        if ( currentConversationID == null || currentConversationID.equalsIgnoreCase(id) ||
+                isReachable(currentConversationID, id)){
+            currentConversationID = id;
+        }else {
+            System.out.println("New conversation node [" + id + "] is not reachable from currnet node [" +
+                    currentConversationID);
+        }
+    }
+
     public boolean isValid(String conversationID){
         Conversation conversation = conversations.get(conversationID);
         if (conversation == null) return false;
@@ -73,20 +89,8 @@ public class ConversationGraph extends ConversationGraphSubject {
         return conversations.get(id);
     }
 
-    public void setCurrentConversation(String id){
-        Conversation conversation = getConversationByID(id);
-        if (conversation == null ) return;
-        //Can we reach the new conversation from the current one?
-
-        //Make sure we check case
-        //where the current node is checked against itself
-        if ( currentConversationID == null || currentConversationID.equalsIgnoreCase(id) ||
-        isReachable(currentConversationID, id)){
-            currentConversationID = id;
-        }else {
-            System.out.println("New conversation node [" + id + "] is not reachable from currnet node [" +
-                    currentConversationID);
-        }
+    public String displayCurrentConversation(){
+        return conversations.get(currentConversationID).getDialog();
     }
 
     public void addChoice(ConversationChoice conversationChoice){
@@ -97,9 +101,7 @@ public class ConversationGraph extends ConversationGraphSubject {
         list.add(conversationChoice);
     }
 
-    public String displayCurrentConversation(){
-        return conversations.get(currentConversationID).getDialog();
-    }
+
 
     public String toString(){
         StringBuilder outputString = new StringBuilder();
