@@ -30,7 +30,7 @@ public class ConversationGraph extends ConversationGraphSubject {
         this.associatedChoices = new Hashtable<String, ArrayList<ConversationChoice>>(conversations.size());
 
         for (Conversation conversation: conversations.values()){
-            associatedChoices.put(conversation.getID(), new ArrayList<ConversationChoice>());
+            associatedChoices.put(conversation.getId(), new ArrayList<ConversationChoice>());
         }
         this.conversations = conversations;
     }
@@ -73,8 +73,8 @@ public class ConversationGraph extends ConversationGraphSubject {
         ArrayList<ConversationChoice> list = associatedChoices.get(sourceID);
         if (list == null) return false;
         for (ConversationChoice choice: list){
-            if (choice.getSourceID().equalsIgnoreCase(sourceID) &&
-            choice.getDestinationID().equalsIgnoreCase(sinkID)){
+            if (choice.getSourceId().equalsIgnoreCase(sourceID) &&
+            choice.getDestinationId().equalsIgnoreCase(sinkID)){
                 return true;
             }
         }
@@ -113,7 +113,7 @@ public class ConversationGraph extends ConversationGraphSubject {
 
             for ( ConversationChoice choice: associatedChoices.get(id)){
                 numberTotalChoices++;
-                outputString.append(String.format("%s ", choice.getDestionationId()));
+                outputString.append(String.format("%s ", choice.getDestinationId()));
             }
             outputString.append(System.getProperty("line.separator"));
         }
