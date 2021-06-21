@@ -136,7 +136,7 @@ public class InventoryUI extends Window {
         Array<Cell> cells = targetTable.getCells();
         for (int i = 0; i < cells.size; i++) {
             InventorySlot inventorySlot = (InventorySlot) cells.get(i).getActor();
-            if (inventorySlot = null) continue;
+            if (inventorySlot == null) continue;
             inventorySlot.clearAllInventoryItems(false);
         }
     }
@@ -152,7 +152,7 @@ public class InventoryUI extends Window {
         return items;
     }
 
-    public static void populateInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems){
+    public static void populateInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop draganddrop){
         clearInventoryItems(targetTable);
 
         Array<Cell> cells = targetTable.getCells();
@@ -165,12 +165,12 @@ public class InventoryUI extends Window {
                 InventoryItem item = InventoryItemFactory.getInstace().getInventoryItem(itemTypeID);
                 item.setName(targetTable.getName());
                 inventorySlot.add(item);
-                _d.addSource(new InventorySlotSource(inventorySlot, _dragAndDrop));
+                draganddrop.addSource(new InventorySlotSource(inventorySlot, draganddrop));
             }
         }
     }
 
-    public Array<InventoryItemLocation> getInventory(Table targetTable){
+    public static Array<InventoryItemLocation> getInventory(Table targetTable){
         Array<Cell> cells = targetTable.getCells();
         Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
         for (int i = 0; i < cells.size; i++) {
@@ -178,11 +178,60 @@ public class InventoryUI extends Window {
             if (inventorySlot == null) continue;
             int numItems = inventorySlot.getNumItems();
             if (numItems > 0){
-                items.add(new InventoryItemLocation(i,
-                        inventorySlot.getTopInventoryItem().getItemTypeID().toString(), numItems));
+                items.add(new InventoryItemLocation(
+                        i,
+                        inventorySlot.getTopInventoryItem().getItemTypeID().toString(),
+                        numItems));
             }
         }
         return items;
+    }
+
+    public static Array<InventoryItemLocation> getInventory(Table targetTable, String name){
+        Array<Cell> cells = targetTable.getCells();
+        Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
+        for (int i = 0; i < cells.size; i++) {
+            InventorySlot inventorySlot = ((InventorySlot) cells.get(i).getActor());
+            if (inventorySlot == null) continue;
+            int numItems = inventorySlot.getNumItems(name);
+            if (numItems > 0){
+                //System.out.println("[i] " + i + " itemtype: " + inventorySlot.getTopInventoryItem().getItemTypeID().toString() + " numItems " + numItems);
+                items.add(new InventoryItemLocation(
+                        i,
+                        inventorySlot.getTopInventoryItem().getItemTypeID().toString(),
+                        numItems));
+            }
+        }
+        return items;
+    }
+
+    public static Array<InventoryItemLocation> getInventory(Table sourceTable, Table targetTable, String name){
+        Array<InventoryItemLocation> items = getInventory(targetTable, name);
+        Array<Cell> sourceCells = sourceTable.getCells();
+        int index = 0;
+        for (InventoryItemLocation item : items){
+            for (; index < sourceCells.size; index++) {
+                InventorySlot inventorySlot = ((InventorySlot) sourceCells.get(index).getActor());
+                if (inventorySlot == null) continue;
+                int numItems = inventorySlot.getNumItems(name);
+                {
+                    item.setLocationIndex(index);
+                    //System.out.println("[index] " + index + " itemtype: " + item.getItemTypeAtLocation() + " numItems " + numItems);
+                    index++;
+                    break;
+                }
+            }
+        }
+        return items;
+    }
+
+    public static void setInventoryItemNames(Table targetTable, String name){
+        Array<Cell> cells = targetTable.getCells();
+        for (int i = 0; i < cells.size; i++) {
+            InventorySlot inventorySlot = ((InventorySlot) cells.get(i).getActor());
+            if (inventorySlot == null) continue;
+            inventorySlot.updateAllInventoryItemNames(name);
+        }
     }
 
     public Array<Actor> getInventoryActors(){

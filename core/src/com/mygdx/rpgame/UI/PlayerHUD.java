@@ -8,14 +8,21 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.rpgame.ComponentObserver;
 import com.mygdx.rpgame.Entity;
+import com.mygdx.rpgame.EntityConfig;
+import com.mygdx.rpgame.InventoryItem;
 import com.mygdx.rpgame.InventoryItem.ItemTypeID;
+import com.mygdx.rpgame.MapManager;
+import com.mygdx.rpgame.dialog.ConversationGraph;
+import com.mygdx.rpgame.dialog.ConversationGraphObserver;
 import com.mygdx.rpgame.profile.ProfileManager;
 import com.mygdx.rpgame.profile.ProfileObserver;
 
-public class PlayerHUD implements Screen, ProfileObserver {
+public class PlayerHUD implements Screen, ProfileObserver, ComponentObserver, ConversationGraphObserver, StoreInventoryObserver, StatusObserver {
 
     private Stage _stage;
     private Viewport _viewport;
@@ -134,4 +141,18 @@ public class PlayerHUD implements Screen, ProfileObserver {
         _stage.dispose();
     }
 
+    @Override
+    public void onNotify(String value, ComponentEvent event) {
+
+    }
+
+    @Override
+    public void onNotify(String value, StoreInventoryEvent event) {
+
+    }
+
+    @Override
+    public void onNotify(ConversationGraph graph, ConversationCommandEvent event) {
+
+    }
 }
