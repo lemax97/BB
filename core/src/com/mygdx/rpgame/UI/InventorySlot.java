@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.mygdx.rpgame.InventoryItem;
 import com.mygdx.rpgame.Utility;
 
-public class InventorySlot extends Stack {
+public class InventorySlot extends Stack implements InventorySlotSubject {
 
     //All slots have this default image
     private Stack _defaultBackground;
@@ -20,10 +20,13 @@ public class InventorySlot extends Stack {
     private int _numItemsVal = 0;
     private int _filterItemType;
 
+    private Array<InventorySlotObserver> _observers;
+
     public InventorySlot() {
         _filterItemType = 0; //filter nothing
         _defaultBackground = new Stack();
         _customBackgroundDecal = new Image();
+        _observers = new Array<InventorySlotObserver>();
         Image image = new Image(new NinePatch(Utility.STATUSUI_TEXTUREATLAS.createPatch("dialog")));
 
         _numItemsLabel = new Label(String.valueOf(_numItemsVal), Utility.STATUSUI_SKIN, "inventory-item-count");
@@ -31,6 +34,9 @@ public class InventorySlot extends Stack {
         _numItemsLabel.setVisible(false);
 
         _defaultBackground.add(image);
+
+        _defaultBackground.setName("background");
+        _numItemsLabel.setName("numitems");
 
         this.add(_defaultBackground);
         this.add(_numItemsLabel);
@@ -43,22 +49,28 @@ public class InventorySlot extends Stack {
         _defaultBackground.add(_customBackgroundDecal);
     }
 
-    public void decrementItemCount() {
+    public void decrementItemCount(boolean sendRemoveNotification) {
         _numItemsVal--;
         _numItemsLabel.setText(String.valueOf(_numItemsVal));
         if (_defaultBackground.getChildren().size == 1){
             _defaultBackground.add(_customBackgroundDecal);
         }
         checkVisibilityOfItemCount();
+        if ( sendRemoveNotification){
+            notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM);
+        }
     }
 
-    public void incrementItemCount(){
+    public void incrementItemCount(boolean sendAddNotificaton){
         _numItemsVal++;
         _numItemsLabel.setText(String.valueOf(_numItemsVal));
         if (_defaultBackground.getChildren().size > 1){
             _defaultBackground.getChildren().pop();
         }
         checkVisibilityOfItemCount();
+        if (sendAddNotificaton){
+            notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM);
+        }
     }
 
     @Override
@@ -70,7 +82,7 @@ public class InventorySlot extends Stack {
         }
 
         if (!actor.equals(_defaultBackground) && !actor.equals(_numItemsLabel)){
-            incrementItemCount();
+            incrementItemCount(true);
         }
     }
 
@@ -83,31 +95,56 @@ public class InventorySlot extends Stack {
             }
 
             if (!actor.equals(_defaultBackground) && !actor.equals(_numItemsLabel)){
-                incrementItemCount();
+                incrementItemCount(true);
             }
         }
     }
 
     public Array<Actor> getAllInventoryItems(){
-        Array<Actor> items = new Array<>();
+        Array<Actor> items = new Array<Actor>();
         if (hasItem()){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems = arrayChildren.size - 2;
             for (int i = 0; i < numInventoryItems; i++) {
+                decrementItemCount(true);
                 items.add(arrayChildren.pop());
-                decrementItemCount();
+
             }
         }
         return items;
     }
 
-    public void clearAllInventoryItems(){
+    public void updateAllInventoryItemNames(String name){
+        if (hasItem()){
+            SnapshotArray<Actor> arrayChildren = this.getChildren();
+            //skip first two elements
+            for (int i = arrayChildren.size - 1; i > 1 ; i--) {
+                arrayChildren.get(i).setName(name);
+            }
+        }
+    }
+
+    public void removeAllInventoryItemsWithName(String name){
+        if (hasItem()){
+            SnapshotArray<Actor> arrayChildren = this.getChildren();
+            //skip first two elements
+            for (int i = arrayChildren.size - 1; i > 1; i--) {
+                String itemName = arrayChildren.get(i).getName();
+                if (itemName.equalsIgnoreCase(name)){
+                    decrementItemCount(true);
+                    arrayChildren.removeIndex(i);
+                }
+            }
+        }
+    }
+
+    public void clearAllInventoryItems(boolean sendRemoveNotifications){
         if (hasItem()){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems = getNumItems();
             for (int i = 0; i < numInventoryItems; i++) {
+                decrementItemCount(sendRemoveNotifications);
                 arrayChildren.pop();
-                decrementItemCount();
             }
         }
     }
@@ -134,6 +171,20 @@ public class InventorySlot extends Stack {
         if (hasChildren()){
             SnapshotArray<Actor> itmes = this.getChildren();
             return itmes.size - 2;
+        }
+        return 0;
+    }
+
+    public int getNumItems(String name){
+        if (hasChildren()){
+            SnapshotArray<Actor> items = this.getChildren();
+            int totalFilteredSize = 0;
+            for (Actor actor: items){
+                if (actor.getName().equalsIgnoreCase(name)){
+                    totalFilteredSize++;
+                }
+            }
+            return totalFilteredSize;
         }
         return 0;
     }
@@ -170,5 +221,29 @@ public class InventorySlot extends Stack {
         tempArray.add(dragActor);
         inventorySlotSource.add(inventorySlotTarget.getAllInventoryItems());
         inventorySlotTarget.add(tempArray);
+    }
+
+    @Override
+    public void addObserver(InventorySlotObserver slotObserver) {
+        _observers.add(slotObserver);
+    }
+
+    @Override
+    public void removeObserver(InventorySlotObserver slotObserver) {
+        _observers.removeValue(slotObserver, true);
+    }
+
+    @Override
+    public void removeAllObservers() {
+        for (InventorySlotObserver observer: _observers){
+            _observers.removeValue(observer, true);
+        }
+    }
+
+    @Override
+    public void notify(final InventorySlot slot, InventorySlotObserver.SlotEvent event) {
+        for (InventorySlotObserver observer: _observers){
+            observer.onNotify(slot, event);
+        }
     }
 }

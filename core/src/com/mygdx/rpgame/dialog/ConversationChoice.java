@@ -1,10 +1,12 @@
 package com.mygdx.rpgame.dialog;
 
+import com.mygdx.rpgame.dialog.ConversationGraphObserver.ConversationCommandEvent;
+
 public class ConversationChoice {
     private String sourceId;
     private String destinationId;
     private String choicePhrase;
-    private ConversationGraphObserver.ConversationCommandEvent conversationCommandEvent;
+    private ConversationCommandEvent conversationCommandEvent;
 
     public ConversationChoice(){}
 
