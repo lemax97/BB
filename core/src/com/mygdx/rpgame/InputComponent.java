@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Json;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class InputComponent implements Component, InputProcessor{
+public abstract class InputComponent extends ComponentSubject implements Component, InputProcessor{
 
     protected Entity.Direction _currentDirection = null;
     protected Entity.State _currentState = null;

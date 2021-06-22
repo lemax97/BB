@@ -77,7 +77,7 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
         _inventorySlotTooltip = new InventorySlotTooltip(Utility.STATUSUI_SKIN);
 
         _sellButton = new TextButton(SELL, Utility.STATUSUI_SKIN, "inventory");
-        disabelButton(_sellButton, true);
+        disableButton(_sellButton, true);
 
         _sellTotalLabel = new Label(SELL + " : " + _tradeInVal + GP, Utility.STATUSUI_SKIN);
         _sellTotalLabel.setAlignment(Align.center);
@@ -183,8 +183,8 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
                     for (int i = 0; i < cells.size; i++) {
                         InventorySlot inventorySlot = (InventorySlot) cells.get(i).getActor();
                         if (inventorySlot == null) continue;
-                        if (inventorySlot.hasItem()) &&
-                        inventorySlot.getTopInventoryItem().getName().equalsIgnoreCase(PLAYER_INVENTORY){
+                        if (inventorySlot.hasItem() &&
+                        inventorySlot.getTopInventoryItem().getName().equalsIgnoreCase(PLAYER_INVENTORY)){
                             inventorySlot.clearAllInventoryItems(false);
                         }
                     }
@@ -194,28 +194,122 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
         });
     }
 
+    public TextButton getCloseButton(){
+        return _closeButton;
+    }
+
+    public Table getInventorySlotTable(){
+        return _inventorySlotTable;
+    }
+
+    public Array<Actor> getInventoryActors(){
+        return _inventoryActors;
+    }
+
+    public void loadPlayerInventory(Array<InventoryItemLocation> playerInventoryItems){
+        InventoryUI.populateInventory(_playerInventorySlotTable, playerInventoryItems, _dragAndDrop);
+    }
+
+    public void loadStoreInventory(Array<InventoryItemLocation> storeInventoryItems){
+        InventoryUI.populateInventory(_inventorySlotTable, storeInventoryItems, _dragAndDrop);
+    }
+
+    public void savePlayerInventory(){
+        Array<InventoryItemLocation> playerItemsInPlayerInventory = InventoryUI.getInventory(_playerInventorySlotTable, PLAYER_INVENTORY);
+        Array<InventoryItemLocation> playerItemsInStoreInventory = InventoryUI.getInventory(_playerInventorySlotTable, _inventorySlotTable, PLAYER_INVENTORY);
+        playerItemsInPlayerInventory.addAll(playerItemsInStoreInventory);
+        StoreInventoryUI.this.notify(_json.toJson(playerItemsInPlayerInventory), StoreInventoryEvent.PLAYER_INVENTORY_UPDATED);
+    }
+
+    public void cleanupStoreInventory(){
+        InventoryUI.removeInventoryItems(STORE_INVENTORY, _playerInventorySlotTable);
+        InventoryUI.removeInventoryItems(PLAYER_INVENTORY, _inventorySlotTable);
+    }
+
     @Override
     public void onNotify(InventorySlot slot, SlotEvent event) {
+        switch (event)
+        {
+            case ADDED_ITEM:
+                //moving from player inventory to store inventory to sell
+                if (slot.getTopInventoryItem().getName().equalsIgnoreCase(PLAYER_INVENTORY) &&
+                slot.getName().equalsIgnoreCase(STORE_INVENTORY)){
+                    _tradeInVal += slot.getTopInventoryItem().getTradeValue();
+                    _sellTotalLabel.setText(SELL + " : " + _tradeInVal + GP);
+                }
+                //moving from store inventory to player inventory to buy
+                if (slot.getTopInventoryItem().getName().equalsIgnoreCase(STORE_INVENTORY) &&
+                slot.getName().equalsIgnoreCase(PLAYER_INVENTORY)){
+                    _fullValue += slot.getTopInventoryItem().getItemValue();
+                    _buyTotalLabel.setText(BUY + " : " + _fullValue + GP);
+                }
+                break;
+            case REMOVED_ITEM:
+                if (slot.getTopInventoryItem().getName().equalsIgnoreCase(PLAYER_INVENTORY) &&
+                slot.getName().equalsIgnoreCase(STORE_INVENTORY)){
+                    _tradeInVal -= slot.getTopInventoryItem().getTradeValue();
+                    _sellTotalLabel.setText(SELL + " : " + _tradeInVal + GP);
+                }
+                if (slot.getTopInventoryItem().getName().equalsIgnoreCase(STORE_INVENTORY) &&
+                slot.getName().equalsIgnoreCase(PLAYER_INVENTORY)){
+                    _fullValue -= slot.getTopInventoryItem().getItemValue();
+                    _buyTotalLabel.setText(BUY + " : " + _fullValue + GP);
+                }
+                break;
+        }
+        checkButtonStates();
+    }
 
+    public void checkButtonStates(){
+        if (_tradeInVal <= 0){
+            disableButton(_sellButton, true);
+        }else {
+            disableButton(_sellButton, false);
+        }
+
+        if (_fullValue <= 0 || _playerTotal < _fullValue){
+            disableButton(_buyButton, true);
+        }else {
+            disableButton(_buyButton, false);
+        }
+    }
+
+    public void setPlayerGP(int value){
+        _playerTotal = value;
+        _playerTotalGP.setText(PLAYER_TOTAL + " : " + _playerTotal + GP);
+    }
+
+    private void disableButton(Button button, boolean disable){
+        if (disable){
+            button.setDisabled(true);
+            button.setTouchable(Touchable.disabled);
+        }else {
+            button.setDisabled(false);
+            button.setTouchable(Touchable.enabled);
+        }
     }
 
     @Override
     public void addObserver(StoreInventoryObserver storeObserver) {
-
+        _observers.add(storeObserver);
     }
 
     @Override
     public void removeObserver(StoreInventoryObserver storeObserver) {
-
+        _observers.removeValue(storeObserver, true);
     }
 
     @Override
     public void removeAllObservers() {
-
+        for (StoreInventoryObserver observer: _observers){
+            _observers.removeValue(observer, true);
+        }
     }
 
     @Override
     public void notify(String value, StoreInventoryObserver.StoreInventoryEvent event) {
-
+        for (StoreInventoryObserver observer: _observers){
+            observer.onNotify(value, event);
+        }
     }
 }

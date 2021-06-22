@@ -1,13 +1,14 @@
 package com.mygdx.rpgame;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class InventoryItem extends Image {
 
     public enum ItemAttribute{
         CONSUMABLE(1),
-        EQUPPABLE(2),
+        EQUIPPABLE(2),
         STACKABLE(4);
 
         private int _attribute;
@@ -61,13 +62,15 @@ public class InventoryItem extends Image {
     private int itemUseType;
     private ItemTypeID itemTypeID;
     private String itemShortDescription;
+    private int itemValue;
 
-    public InventoryItem(TextureRegion textureRegion, int itemAttributes, ItemTypeID itemTypeID, int itemUseType){
+    public InventoryItem(TextureRegion textureRegion, int itemAttributes, ItemTypeID itemTypeID, int itemUseType, int itemValue){
         super(textureRegion);
 
         this.itemTypeID = itemTypeID;
         this.itemAttributes = itemAttributes;
         this.itemUseType = itemUseType;
+        this.itemValue = itemValue;
     }
 
     public InventoryItem(){
@@ -80,6 +83,15 @@ public class InventoryItem extends Image {
         this.itemAttributes = inventoryItem.getItemAttributes();
         this.itemUseType = inventoryItem.getItemUseType();
         this.itemShortDescription = inventoryItem.getItemShortDescription();
+        this.itemValue = inventoryItem.getItemValue();
+    }
+
+    public int getItemValue(){
+        return itemValue;
+    }
+
+    public void setItemValue(int itemValue){
+        this.itemValue = itemValue;
     }
 
     public ItemTypeID getItemTypeID(){
@@ -120,5 +132,10 @@ public class InventoryItem extends Image {
 
     public boolean isSameItemType(InventoryItem candidateInventoryItem){
         return itemTypeID == candidateInventoryItem.getItemTypeID();
+    }
+
+    public int getTradeValue(){
+        //For now, we will set the trade in value of items at about one third their original value
+        return MathUtils.floor(itemValue * .33f) + 2;
     }
 }

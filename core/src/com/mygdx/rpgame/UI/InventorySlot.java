@@ -208,7 +208,7 @@ public class InventorySlot extends Stack implements InventorySlotSubject {
         return actor;
     }
 
-    public static void swapSlots(InventorySlot inventorySlotSource, InventorySlot inventorySlotTarget, InventoryItem dragActor) {
+    static public void swapSlots(InventorySlot inventorySlotSource, InventorySlot inventorySlotTarget, InventoryItem dragActor) {
         //check if items can accept each other, otherwise, no swap
         if (!inventorySlotTarget.doesAcceptItemUseType(dragActor.getItemUseType()) ||
                 !inventorySlotSource.doesAcceptItemUseType(inventorySlotTarget.getTopInventoryItem().getItemUseType())){

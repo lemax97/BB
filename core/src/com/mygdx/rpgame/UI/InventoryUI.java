@@ -120,7 +120,7 @@ public class InventoryUI extends Window {
         this.pack();
     }
 
-    public DragAndDrop getdragAndDrop(){
+    public DragAndDrop getDragAndDrop(){
         return _dragAndDrop;
     }
 

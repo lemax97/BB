@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -17,8 +16,7 @@ public class Entity {
     private Json _json;
     private EntityConfig _entityConfig;
 
-
-    public enum Direction {
+    public static enum Direction {
         UP,
         RIGHT,
         DOWN,
@@ -41,7 +39,7 @@ public class Entity {
         }
     }
 
-    public enum State {
+    public static enum State {
         IDLE,
         WALKING,
 
@@ -53,7 +51,7 @@ public class Entity {
         }
     }
 
-    public enum AnimationType{
+    public static enum AnimationType{
         WALK_LEFT,
         WALK_RIGHT,
         WALK_UP,
@@ -77,7 +75,7 @@ public class Entity {
         _entityConfig = new EntityConfig();
         _json = new Json();
 
-        _components = new Array<>(MAX_COMPONENTS);
+        _components = new Array<Component>(MAX_COMPONENTS);
 
         _inputComponent = inputComponent;
         _physicsComponent = physicsComponent;
@@ -102,6 +100,18 @@ public class Entity {
         for (Component component: _components){
             component.receiveMessage(fullMessage);
         }
+    }
+
+    public void registerObserver(ComponentObserver observer){
+        _inputComponent.addObserver(observer);
+        _physicsComponent.addObserver(observer);
+        _graphicsComponent.addObserver(observer);
+    }
+
+    public void unregisterObserver(){
+        _inputComponent.removeAllObservers();
+        _physicsComponent.removeAllObservers();
+        _graphicsComponent.removeAllObservers();
     }
 
     public void update(MapManager mapMgr, Batch batch, float delta){

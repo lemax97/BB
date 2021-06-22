@@ -7,10 +7,12 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
-public abstract class PhysicsComponent implements Component{
+public abstract class PhysicsComponent extends ComponentSubject implements Component{
     private static final String TAG = PhysicsComponent.class.getSimpleName();
 
     public abstract void update(Entity entity, MapManager mapMgr, float delta);
@@ -23,6 +25,9 @@ public abstract class PhysicsComponent implements Component{
 
     public Rectangle _boundingBox;
     protected BoundingBoxLocation _boundingBoxLocation;
+
+    protected Ray _selectionRay;
+    protected final float _selectRayMaximumDistance = 32.0f;
 
     public static enum BoundingBoxLocation{
         BOTTOM_LEFT,
@@ -37,6 +42,7 @@ public abstract class PhysicsComponent implements Component{
         this._boundingBox = new Rectangle();
         this._json = new Json();
         _boundingBoxLocation = BoundingBoxLocation.BOTTOM_LEFT;
+        _selectionRay = new Ray(new Vector3(), new Vector3());
     }
 
     protected boolean isCollisionWithMapEntities(Entity entity, MapManager mapMgr){
@@ -166,8 +172,7 @@ public abstract class PhysicsComponent implements Component{
             Gdx.app.debug(TAG, "Width and Height are 0! " + width + ":" + height);
         }
 
-        //Need to account for the unitscale, since the map
-        //coordinates will be in pixels
+        //Need to account for the unitscale, since the map coordinates will be in pixels
         float minX;
         float minY;
 
