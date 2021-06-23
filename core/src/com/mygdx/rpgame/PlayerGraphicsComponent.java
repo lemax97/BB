@@ -11,14 +11,14 @@ import com.mygdx.rpgame.EntityConfig.AnimationConfig;
 
 public class PlayerGraphicsComponent extends GraphicsComponent{
 
-//    private static final String TAG = PlayerGraphicsComponent.class.getSimpleName();
+    private static final String TAG = PlayerGraphicsComponent.class.getSimpleName();
 
     public PlayerGraphicsComponent(){
     }
 
     @Override
     public void receiveMessage(String message) {
-//        Gdx.app.debug(TAG, "Got message " + message);
+        //Gdx.app.debug(TAG, "Got message " + message);
         String[] string = message.split(MESSAGE_TOKEN);
 
         if ( string.length == 0 ) return;
@@ -69,7 +69,8 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
         batch.end();
 
         //Used to graphically debug boundingboxes
-       /* Rectangle rect = entity.getCurrentBoundingBox();
+       /*
+        Rectangle rect = entity.getCurrentBoundingBox();
         _shapeRenderer.setProjectionMatrix(camera.combined);
         _shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         _shapeRenderer.setColor(Color.RED);
@@ -80,6 +81,5 @@ public class PlayerGraphicsComponent extends GraphicsComponent{
     }
     @Override
     public void dispose() {
-
     }
 }

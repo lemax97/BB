@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 import com.mygdx.rpgame.BludBourne;
@@ -72,15 +73,12 @@ public class MainGameScreen implements Screen {
         _hudCamera = new OrthographicCamera();
         _hudCamera.setToOrtho(false, VIEWPORT.physicalWidth, VIEWPORT.physicalHeight);
 
-        _playerHUD = new PlayerHUD(_hudCamera, _player);
+        _playerHUD = new PlayerHUD(_hudCamera, _player, _mapMgr);
 
         _multiplexer = new InputMultiplexer();
         _multiplexer.addProcessor(_playerHUD.getStage());
         _multiplexer.addProcessor(_player.getInputProcessor());
         Gdx.input.setInputProcessor(_multiplexer);
-
-        ProfileManager.getInstance().addObserver(_playerHUD);
-        ProfileManager.getInstance().addObserver(_mapMgr);
     }
 
     @Override
@@ -116,6 +114,12 @@ public class MainGameScreen implements Screen {
             _camera.position.set(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y, 0f);
             _camera.update();
 
+            //register observers
+            Array<Entity> entities = _mapMgr.getCurrentMapEntities();
+            for (Entity entity: entities){
+                entity.registerObserver(_playerHUD);
+            }
+
             _mapMgr.setMapChanged(false);
         }
 
@@ -147,6 +151,7 @@ public class MainGameScreen implements Screen {
     }
 
     public void dispose() {
+        _player.unregisterObserver();
         _player.dispose();
         _mapRenderer.dispose();
     }
@@ -198,11 +203,8 @@ public class MainGameScreen implements Screen {
             VIEWPORT.viewportHeight = VIEWPORT.viewportWidth * (VIEWPORT.physicalHeight / VIEWPORT.physicalWidth);
         }
 
-        Gdx.app.debug(TAG, "WorldRenderer: virtual: (" + VIEWPORT.virtualWidth + ","
-                + VIEWPORT.virtualHeight + ")");
-        Gdx.app.debug(TAG, "WorldRenderer: viewport: (" + VIEWPORT.viewportWidth + ","
-                + VIEWPORT.viewportHeight + ")");
-        Gdx.app.debug(TAG, "WorldRenderer: physical: (" + VIEWPORT.physicalWidth + ","
-                + VIEWPORT.physicalHeight + ")");
+        Gdx.app.debug(TAG, "WorldRenderer: virtual: (" + VIEWPORT.virtualWidth + "," + VIEWPORT.virtualHeight + ")");
+        Gdx.app.debug(TAG, "WorldRenderer: viewport: (" + VIEWPORT.viewportWidth + "," + VIEWPORT.viewportHeight + ")");
+        Gdx.app.debug(TAG, "WorldRenderer: physical: (" + VIEWPORT.physicalWidth + "," + VIEWPORT.physicalHeight + ")");
     }
 }

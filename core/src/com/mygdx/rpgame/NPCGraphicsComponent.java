@@ -11,31 +11,39 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class NPCGraphicsComponent extends GraphicsComponent{
-//    private static final String TAG = NPCGraphicsComponent.class.getSimpleName();
+public class NPCGraphicsComponent extends GraphicsComponent {
+    private static final String TAG = NPCGraphicsComponent.class.getSimpleName();
 
     private boolean _isSelected = false;
+    private boolean _wasSelected = false;
+
+    private boolean _sentShowConversationMessage = false;
+    private boolean _sentHideConversationMessage = false;
 
     public NPCGraphicsComponent() {
     }
 
     @Override
     public void receiveMessage(String message) {
-        //        Gdx.app.debug(TAG, "Got message " + message);
+        //Gdx.app.debug(TAG, "Got message " + message);
         String[] string = message.split(MESSAGE_TOKEN);
 
         if ( string.length == 0 ) return;
 
         if (string.length == 1){
-            if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_SELECTED.toString())){
-                _isSelected = true;
-            } else if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_DESELECTED.toString())){
+            if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_SELECTED.toString())) {
+                if (_wasSelected) {
+                    _isSelected = false;
+                } else {
+                    _isSelected = true;
+                }
+            }else if (string[0].equalsIgnoreCase(MESSAGE.ENTITY_DESELECTED.toString())) {
+                _wasSelected = _isSelected;
                 _isSelected = false;
             }
         }
 
-        //Specifically for messages with 1 object payload
-        if (string.length == 2){
+        if( string.length == 2 ) {
             if (string[0].equalsIgnoreCase(MESSAGE.CURRENT_POSITION.toString())){
                 _currentPosition = _json.fromJson(Vector2.class, string[1]);
             } else if (string[0].equalsIgnoreCase(MESSAGE.INIT_START_POSITION.toString())){
@@ -73,6 +81,18 @@ public class NPCGraphicsComponent extends GraphicsComponent{
 
        if (_isSelected){
            drawSelected(entity, mapMgr);
+           mapMgr.setCurrentSelectedMapEntity(entity);
+           if (_sentShowConversationMessage == false){
+               notify(_json.toJson(entity.getEntityConfig()), ComponentObserver.ComponentEvent.SHOW_CONVERSATION);
+               _sentShowConversationMessage = true;
+               _sentHideConversationMessage = false;
+           }
+       }else {
+           if (_sentHideConversationMessage == false){
+               notify(_json.toJson(entity.getEntityConfig()), ComponentObserver.ComponentEvent.HIDE_CONVERSATION);
+               _sentHideConversationMessage = true;
+               _sentShowConversationMessage = false;
+           }
        }
 
        batch.begin();

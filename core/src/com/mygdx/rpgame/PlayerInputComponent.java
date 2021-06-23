@@ -2,19 +2,16 @@ package com.mygdx.rpgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.rpgame.screens.MainGameScreen;
 
-public class PlayerInputComponent extends InputComponent implements InputProcessor {
+public class PlayerInputComponent extends InputComponent {
 
     private final static String TAG = PlayerInputComponent.class.getSimpleName();
     private Vector3 _lastMouseCoordinates;
 
     public PlayerInputComponent() {
-//        Gdx.app.debug(TAG, "Construction");
         this._lastMouseCoordinates = new Vector3();
-        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -129,6 +126,7 @@ public class PlayerInputComponent extends InputComponent implements InputProcess
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 //        Gdx.app.debug(TAG, "GameScreen: MOUSE DOWN........: (" + screenX + "," + screenY + ")");
+
         if ( button == Input.Buttons.LEFT || button == Input.Buttons.RIGHT){
             this.setClickedMouseCoordinates(screenX, screenY);
         }

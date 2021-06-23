@@ -21,8 +21,8 @@ public class NewGameScreen implements Screen {
     private Stage _stage;
     private BludBourne _game;
 
-    public NewGameScreen(final BludBourne _game) {
-        this._game = _game;
+    public NewGameScreen(BludBourne game) {
+        this._game = game;
 
         //create
         _stage = new Stage();
@@ -90,7 +90,7 @@ public class NewGameScreen implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 String messageText = profileText.getText();
-                //check to see if the currnet profile matches one that already exists
+                //check to see if the current profile matches one that already exists
                 boolean exists = false;
 
                 exists = ProfileManager.getInstance().doesProfileExist(messageText);

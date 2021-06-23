@@ -17,7 +17,7 @@ public class ProfileManager extends ProfileSubject{
     private String _profileName;
 
     private static final String SAVEGAME_SUFFIX = ".sav";
-    private static final String DEFAULT_PROFILE = "default";
+    public static final String DEFAULT_PROFILE = "default";
 
     private ProfileManager(){
         _json = new Json();
@@ -36,8 +36,9 @@ public class ProfileManager extends ProfileSubject{
 
     public Array<String> getProfileList(){
         Array<String> profiles = new Array<String>();
-        for (Enumeration<String> e = _profiles.keys(); e.hasMoreElements();)
+        for (Enumeration<String> e = _profiles.keys(); e.hasMoreElements();) {
             profiles.add(e.nextElement());
+        }
         return profiles;
     }
 
@@ -50,8 +51,8 @@ public class ProfileManager extends ProfileSubject{
 
     public void storeAllProfiles() {
         if (Gdx.files.isLocalStorageAvailable()){
-//            FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
             FileHandle[] files = Gdx.files.local(".").list(SAVEGAME_SUFFIX);
+
             for (FileHandle file: files) {
                 _profiles.put(file.nameWithoutExtension(), file);
             }
@@ -70,8 +71,10 @@ public class ProfileManager extends ProfileSubject{
 
         boolean localFileExists = Gdx.files.internal(fullFilename).exists();
 
-        //If we cannot overwrite and hte file exists, exit
-        if (localFileExists && !overwrite) return;
+        //If we cannot overwrite and the file exists, exit
+        if (localFileExists && !overwrite){
+            return;
+        }
 
         FileHandle file = null;
 

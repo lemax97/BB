@@ -21,7 +21,7 @@ public class LoadGameScreen implements Screen {
     private BludBourne _game;
 
     public LoadGameScreen(BludBourne game) {
-        this._game = game;
+        _game = game;
 
         //create
         _stage = new Stage();
@@ -46,6 +46,9 @@ public class LoadGameScreen implements Screen {
         table.center();
         table.setFillParent(true);
         table.padBottom(loadButton.getHeight());
+        table.add(scrollPane).center();
+
+        bottomTable.setHeight(loadButton.getHeight());
         bottomTable.setWidth(Gdx.graphics.getWidth());
         bottomTable.center();
         bottomTable.add(loadButton).padRight(50);

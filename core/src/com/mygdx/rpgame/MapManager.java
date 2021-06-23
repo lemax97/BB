@@ -19,8 +19,10 @@ public class MapManager implements ProfileObserver {
     private boolean _mapChanged = false;
     private Map _currentMap;
     private Entity _player;
+    private Entity _currentSelectedEntity = null;
 
     public MapManager(){
+        ProfileManager.getInstance().addObserver(this);
     }
 
     @Override
@@ -71,10 +73,18 @@ public class MapManager implements ProfileObserver {
             return;
         }
 
+        //Unregister observers
+        if (_currentMap != null){
+            Array<Entity> entities = _currentMap.getMapEntities();
+            for (Entity entity: entities){
+                entity.unregisterObserver();
+            }
+        }
+
         _currentMap = map;
         _mapChanged = true;
-        Gdx.app.debug(TAG, "Player Start: (" +
-                _currentMap.getPlayerStart().x + "," + _currentMap.getPlayerStart().y + ")");
+        clearCurrentSelectedMapEntity();
+        Gdx.app.debug(TAG, "Player Start: (" + _currentMap.getPlayerStart().x + "," + _currentMap.getPlayerStart().y + ")");
     }
 
     public void setClosestStartPositionFromScaledUnits(Vector2 position) {
@@ -106,6 +116,20 @@ public class MapManager implements ProfileObserver {
 
     public final Array<Entity> getCurrentMapEntities(){
         return _currentMap.getMapEntities();
+    }
+
+    public Entity getCurrentSelectedMapEntity(){
+        return _currentSelectedEntity;
+    }
+
+    public void setCurrentSelectedMapEntity(Entity currentSelectedEntity){
+        this._currentSelectedEntity = currentSelectedEntity;
+    }
+
+    public void clearCurrentSelectedMapEntity(){
+        if (_currentSelectedEntity == null) return;
+        _currentSelectedEntity.sendMessage(Component.MESSAGE.ENTITY_DESELECTED);
+        _currentSelectedEntity = null;
     }
 
     public void setPlayer(Entity entity) {

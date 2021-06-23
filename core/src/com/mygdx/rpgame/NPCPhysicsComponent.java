@@ -3,7 +3,7 @@ package com.mygdx.rpgame;
 import com.badlogic.gdx.math.Vector2;
 
 public class NPCPhysicsComponent extends PhysicsComponent {
-//    private static final String TAG = NPCPhysicsComponent.class.getSimpleName();
+    private static final String TAG = NPCPhysicsComponent.class.getSimpleName();
 
     private Entity.State _state;
 
@@ -18,7 +18,7 @@ public class NPCPhysicsComponent extends PhysicsComponent {
 
     @Override
     public void receiveMessage(String message) {
-        //        Gdx.app.debug(TAG, "Got message " + message);
+        //Gdx.app.debug(TAG, "Got message " + message);
         String[] string = message.split(Component.MESSAGE_TOKEN);
 
         if (string.length == 0) return;
@@ -40,16 +40,32 @@ public class NPCPhysicsComponent extends PhysicsComponent {
     public void update(Entity entity, MapManager mapMgr, float delta) {
         updateBoundingBoxPosition(_nextEntityPosition);
 
+        if (isEntityFarFromPlayer(mapMgr)){
+            entity.sendMessage(MESSAGE.ENTITY_DESELECTED);
+        }
+
         if (_state == Entity.State.IMMOBILE) return;
 
         if (!isCollisionWithMapLayer(entity, mapMgr) &&
-                !isCollisionWithMapEntities(entity, mapMgr)
-                && _state == Entity.State.WALKING){
+                !isCollisionWithMapEntities(entity, mapMgr) &&
+                 _state == Entity.State.WALKING){
             setNextPositionToCurrent(entity);
         }else {
             updateBoundingBoxPosition(_currentEntityPosition);
         }
         calculateNextPosition(delta);
+    }
+
+    private boolean isEntityFarFromPlayer(MapManager mapMgr){
+        //Check distance
+        _selectionRay.set(mapMgr.getPlayer().getCurrentBoundingBox().x, mapMgr.getPlayer().getCurrentBoundingBox().y, 0.0f, _boundingBox.x, _boundingBox.y, 0.0f);
+        float distance = _selectionRay.origin.dst(_selectionRay.direction);
+
+        if (distance <= _selectRayMaximumDistance){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     @Override
@@ -59,6 +75,10 @@ public class NPCPhysicsComponent extends PhysicsComponent {
             return true;
         }
 
-        return super.isCollisionWithMapEntities(entity, mapMgr);
+        if( super.isCollisionWithMapEntities(entity, mapMgr) ){
+          return true;
+        }
+
+        return false;
     }
 }

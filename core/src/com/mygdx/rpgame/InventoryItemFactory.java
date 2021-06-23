@@ -14,11 +14,13 @@ import java.util.Hashtable;
 
 public class InventoryItemFactory {
 
+    private Json _json = new Json();
+    private final String INVENTORY_ITEM = "scripts/inventory_items.json";
     private static InventoryItemFactory _instance = null;
-    private final Hashtable<ItemTypeID, InventoryItem> _inventoryItemList;
+    private Hashtable<ItemTypeID, InventoryItem> _inventoryItemList;
 
-    public static InventoryItemFactory getInstace() {
-        if (_instance == null){
+    public static InventoryItemFactory getInstance() {
+        if (_instance == null) {
             _instance = new InventoryItemFactory();
         }
 
@@ -26,11 +28,10 @@ public class InventoryItemFactory {
     }
 
     private InventoryItemFactory(){
-        Json _json = new Json();
-        String INVENTORY_ITEM = "scripts/inventory_items.json";
-        _inventoryItemList = new Hashtable<>();
         ArrayList<JsonValue> list = _json.fromJson(ArrayList.class, Gdx.files.internal(INVENTORY_ITEM));
-        for(JsonValue jsonVal : list){
+        _inventoryItemList = new Hashtable<ItemTypeID, InventoryItem>();
+
+        for (JsonValue jsonVal : list) {
             InventoryItem inventoryItem = _json.readValue(InventoryItem.class, jsonVal);
             _inventoryItemList.put(inventoryItem.getItemTypeID(), inventoryItem);
         }

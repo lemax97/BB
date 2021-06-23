@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 
 public class PlayerPhysicsComponent extends PhysicsComponent{
@@ -17,15 +16,12 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
     private Entity.State _state;
     private Vector3 _mouseSelectCoordinates;
     private boolean _isMouseSelectEnabled = false;
-    private Ray _selectionRay;
-    private float _selectRayMaximumDistance = 32.0f;
 
     public PlayerPhysicsComponent(){
         _boundingBoxLocation = BoundingBoxLocation.BOTTOM_CENTER;
         initBoundingBox(0.3f, 0.5f);
 
         _mouseSelectCoordinates = new Vector3(0, 0, 0);
-        _selectionRay = new Ray(new Vector3(), new Vector3());
     }
 
     @Override
@@ -67,8 +63,8 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
         }
 
         if (!isCollisionWithMapLayer(entity, mapMgr) &&
-                !isCollisionWithMapEntities(entity, mapMgr)
-                && _state == Entity.State.WALKING){
+                !isCollisionWithMapEntities(entity, mapMgr) &&
+                 _state == Entity.State.WALKING){
             setNextPositionToCurrent(entity);
 
             Camera camera = mapMgr.getCamera();
@@ -84,14 +80,12 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
     private void selectMapEntityCandidate(MapManager mapMgr){
         Array<Entity> currentEntities = mapMgr.getCurrentMapEntities();
 
-        //Convert screen coordinates to world coordinates,
-        //then to unit scale coordinates
+        //Convert screen coordinates to world coordinates, then to unit scale coordinates
         mapMgr.getCamera().unproject(_mouseSelectCoordinates);
         _mouseSelectCoordinates.x /= Map.UNIT_SCALE;
         _mouseSelectCoordinates.y /= Map.UNIT_SCALE;
 
-//        Gdx.app.debug(TAG, "Mouse Coordinates " + "("
-//                + _mouseSelectCoordinates.x + "," + _mouseSelectCoordinates.y + ")");
+        //Gdx.app.debug(TAG, "Mouse Coordinates " + "(" + _mouseSelectCoordinates.x + "," + _mouseSelectCoordinates.y + ")");
 
         for (Entity mapEntity : currentEntities){
             //Don't break, reset all entities
@@ -100,16 +94,15 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
             //Gdx.app.debug(TAG, "Entity Candidate Location " + "(" + mapEntityBoundingBox.x + "," + mapEntityBoundingBox.y + ")");
             if (mapEntity.getCurrentBoundingBox().contains(_mouseSelectCoordinates.x, _mouseSelectCoordinates.y)){
                 //Check distance
-                _selectionRay.set(_boundingBox.x, _boundingBox.y, 0.0f,
-                        mapEntityBoundingBox.x, mapEntityBoundingBox.y, 0.0f);
+                _selectionRay.set(_boundingBox.x, _boundingBox.y, 0.0f, mapEntityBoundingBox.x, mapEntityBoundingBox.y, 0.0f);
                 float distance = _selectionRay.origin.dst(_selectionRay.direction);
 
                 if (distance <= _selectRayMaximumDistance){
                     //We have a valid entity selection
                     //Picked/Selected
-                    Gdx.app.debug(TAG, "Selected Entity! " +
-                            mapEntity.getEntityConfig().getEntityID());
+                    Gdx.app.debug(TAG, "Selected Entity! " + mapEntity.getEntityConfig().getEntityID());
                     mapEntity.sendMessage(MESSAGE.ENTITY_SELECTED);
+                    notify(_json.toJson(mapEntity.getEntityConfig()), ComponentObserver.ComponentEvent.LOAD_CONVERSATION);
                 }
             }
         }

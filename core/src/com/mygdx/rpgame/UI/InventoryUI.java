@@ -46,7 +46,8 @@ public class InventoryUI extends Window {
         _equipSlots.defaults().space(10);
         _inventorySlotTooltip = new InventorySlotTooltip(Utility.STATUSUI_SKIN);
 
-        InventorySlot headSlot = new InventorySlot(ItemUseType.ARMOR_HELMET.getValue(),
+        InventorySlot headSlot = new InventorySlot(
+                ItemUseType.ARMOR_HELMET.getValue(),
                 new Image(Utility.ITEMS_TEXTUREATLAS.findRegion("inv_helmet")));
 
         InventorySlot leftArmSlot = new InventorySlot(
@@ -162,7 +163,7 @@ public class InventoryUI extends Window {
             InventorySlot inventorySlot = ((InventorySlot)cells.get(itemLocation.getLocationIndex()).getActor());
 
             for (int index = 0; index < itemLocation.getNumberItemsAtLocation(); index++) {
-                InventoryItem item = InventoryItemFactory.getInstace().getInventoryItem(itemTypeID);
+                InventoryItem item = InventoryItemFactory.getInstance().getInventoryItem(itemTypeID);
                 item.setName(targetTable.getName());
                 inventorySlot.add(item);
                 draganddrop.addSource(new InventorySlotSource(inventorySlot, draganddrop));

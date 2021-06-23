@@ -48,14 +48,13 @@ public class ConversationGraph extends ConversationGraphSubject {
         if (conversation == null ) return;
         //Can we reach the new conversation from the current one?
 
-        //Make sure we check case
-        //where the current node is checked against itself
-        if ( currentConversationID == null || currentConversationID.equalsIgnoreCase(id) ||
+        //Make sure we check case where the current node is checked against itself
+        if ( currentConversationID == null ||
+                currentConversationID.equalsIgnoreCase(id) ||
                 isReachable(currentConversationID, id)){
             currentConversationID = id;
         }else {
-            System.out.println("New conversation node [" + id + "] is not reachable from currnet node [" +
-                    currentConversationID);
+            System.out.println("New conversation node [" + id +"] is not reachable from current node [" + currentConversationID + "]");
         }
     }
 
@@ -69,7 +68,7 @@ public class ConversationGraph extends ConversationGraphSubject {
         if ( !isValid(sourceID) || !isValid(sinkID) ) return false;
         if ( conversations.get(sourceID) == null ) return false;
 
-        //First get edges/choices from source
+        //First get edges/choices from the source
         ArrayList<ConversationChoice> list = associatedChoices.get(sourceID);
         if (list == null) return false;
         for (ConversationChoice choice: list){
@@ -100,8 +99,6 @@ public class ConversationGraph extends ConversationGraphSubject {
 
         list.add(conversationChoice);
     }
-
-
 
     public String toString(){
         StringBuilder outputString = new StringBuilder();

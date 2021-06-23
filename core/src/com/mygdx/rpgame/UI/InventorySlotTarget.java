@@ -35,8 +35,7 @@ public class InventorySlotTarget extends Target {
 
         //First, does the slot accept the source item type?
         if (!_targetSlot.doesAcceptItemUseType(sourceActor.getItemUseType())){
-            //Put item back where it came from,
-            //slot doesn't accept item
+            //Put item back where it came from, slot doesn't accept item
             sourceSlot.add(sourceActor);
             return;
         }
@@ -48,8 +47,7 @@ public class InventorySlotTarget extends Target {
             if (sourceActor.isSameItemType(targetActor) && sourceActor.isStackable()){
                 _targetSlot.add(sourceActor);
             } else {
-                //If the aren't the same items or
-                //the items aren't stackable, the swap
+                //If they aren't the same items or the items aren't stackable, then swap
                 InventorySlot.swapSlots(sourceSlot, _targetSlot, sourceActor);
             }
         }

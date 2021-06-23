@@ -222,7 +222,7 @@ public class PlayerHUD implements Screen, ProfileObserver, ComponentObserver, Co
                 break;
             case EXIT_CONVERSATION:
                 _conversationUI.setVisible(false);
-                _mapMgr.clearCurrnetSelectedMapEntity();
+                _mapMgr.clearCurrentSelectedMapEntity();
                 break;
             case NONE:
                 break;

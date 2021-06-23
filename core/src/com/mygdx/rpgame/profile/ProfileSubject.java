@@ -19,6 +19,8 @@ public class ProfileSubject {
     }
 
     protected void notify(final ProfileManager profileManager, ProfileObserver.ProfileEvent event){
-        for (ProfileObserver observer: _observers) observer.onNotify(profileManager, event);
+        for(ProfileObserver observer: _observers){
+            observer.onNotify(profileManager, event);
+        }
     }
 }
