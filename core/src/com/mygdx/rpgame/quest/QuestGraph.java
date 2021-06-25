@@ -86,7 +86,7 @@ public class QuestGraph {
         this.questTaskDependencies = new Hashtable<String, ArrayList<QuestTaskDependency>>(questTasks.size());
 
         for (QuestTask questTask: questTasks.values()){
-            questTaskDependencies.put(questTask.getID(), new ArrayList<QuestTaskDependency>());
+            questTaskDependencies.put(questTask.getId(), new ArrayList<QuestTaskDependency>());
         }
     }
 
@@ -146,7 +146,7 @@ public class QuestGraph {
         Set<String> keys = questTasks.keySet();
         for (String id: keys){
             if (doesQuestTaskHaveDependencies(id) &&
-            questTaskDep.getDestionationId().equalsIgnoreCase(id)){
+            questTaskDep.getDestinationId().equalsIgnoreCase(id)){
                 System.out.println("ID: " + id + " destID: " + questTaskDep.getDestinationId());
                 return true;
             }
@@ -186,6 +186,43 @@ public class QuestGraph {
         if (readyTask == null) return false;
         readyTask.setTaskComplete();
         return true;
+    }
+
+    public boolean isQuestTaskAvailable(String id){
+        QuestTask task = getQuestTaskByID(id);
+        if (task == null) return false;
+        ArrayList<QuestTaskDependency> list = questTaskDependencies.get(id);
+
+        for (QuestTaskDependency dep: list){
+            QuestTask depTask = getQuestTaskByID(dep.getDestinationId());
+            if (depTask == null || depTask.isTaskComplete()) continue;
+            if (dep.getSourceId().equalsIgnoreCase(id)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void setQuestTaskComplete(String id){
+        QuestTask task = getQuestTaskByID(id);
+        if (task == null) return;
+        task.setTaskComplete();
+    }
+
+    public void update(MapManager mapMgr){
+        ArrayList<QuestTask> allQuestTasks = getAllQuestTasks();
+        for (QuestTask questTask: allQuestTasks){
+
+            if (questTask.isTaskComplete()) continue;
+
+            //We first want to make sure the task is available and is relevant to current location
+            if (!isQuestTaskAvailable(questTask.getId())) continue;
+
+            String taskLocation = questTask.getPropertyValue(QuestTask.QuestTaskPropertyType.TARGET_LOCATION.toString());
+            if (taskLocation == null ||
+            taskLocation.isEmpty() ||
+            !taskLocation.equalsIgnoreCase(mapMgr.getCurrentMapType().toString))) continue;
+        }
     }
 }
 

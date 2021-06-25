@@ -64,6 +64,33 @@ public class QuestTask {
     }
 
     public boolean isTaskComplete(){
+        if (!taskProperties.containsKey(QuestTaskPropertyType.IS_TASK_COMPLETE.toString())){
+            setPropertyValue(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "false");
+            return false;
+        }
+        String val = taskProperties.get(QuestTaskPropertyType.IS_TASK_COMPLETE.toString()).toString();
+        return Boolean.parseBoolean(val);
+    }
 
+    public void setTaskComplete(){
+        setPropertyValue(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "true");
+    }
+
+    public void resetAllProperties(){
+        taskProperties.get(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "false");
+    }
+
+    public void setPropertyValue(String key, String value){
+        taskProperties.put(key, value);
+    }
+
+    public String getPropertyValue(String key){
+        Object propertyVal = taskProperties.get(key);
+        if (propertyVal == null) return new String();
+        return propertyVal.toString();
+    }
+
+    public String toString(){
+        return taskPhrase;
     }
 }

@@ -156,4 +156,5 @@ public class MapManager implements ProfileObserver {
         this._mapChanged = hasMapChanged;
     }
 
+
 }
