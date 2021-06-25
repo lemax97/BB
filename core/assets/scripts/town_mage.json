@@ -3,6 +3,9 @@ entityID : TOWN_MAGE
 state : IMMOBILE
 direction : DOWN
 conversationConfigPath : "conversations/conversation003.json"
+questConfigPath : ""
+currentQuestID : ""
+itemTypeID: NONE
 inventory : [
 	{
 		value: WANDS01

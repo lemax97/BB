@@ -1,28 +1,24 @@
 {
-entityID : TOWN_INNKEEPER
+entityID : QUEST001_TASK002
 state : IMMOBILE
 direction : DOWN
-conversationConfigPath : ""
+conversationConfigPath : "conversations/conversation005.json"
 questConfigPath : ""
 currentQuestID : ""
-itemTypeID: NONE
+itemTypeID: HORNS001
+inventory : [
+	]
 animationConfig: [
 	{
 	    frameDuration: 1.0
 		animationType: IMMOBILE
 		texturePaths: [
-				sprites/characters/Player0.png
-				sprites/characters/Player1.png
+				sprites/items/Flesh.png
 		]
 		gridPoints: [
 			{
-				x: 0
-				y: 5
-			}
-			
-			{
-				x: 0
-				y: 5
+				x: 8
+				y: 4
 			}
 		]
 	}

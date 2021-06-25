@@ -2,7 +2,7 @@
 conversations: {
         1: {
                 id: 1
-                dialog: Hello Traveler. Would you like to see my wares?
+                dialog: Have you finished my quest?
         }
 		2: {
                 id: 2
@@ -20,7 +20,7 @@ associatedChoices: {
                         sourceId: 1
                         destinationId: 2
                         choicePhrase: Yes
-						conversationCommandEvent: LOAD_STORE_INVENTORY
+						conversationCommandEvent: RETURN_QUEST
                 }
                 {
                         class: com.packtpub.libgdx.bludbourne.dialog.ConversationChoice
