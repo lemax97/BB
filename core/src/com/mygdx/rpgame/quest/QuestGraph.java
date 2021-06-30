@@ -220,9 +220,107 @@ public class QuestGraph {
 
             String taskLocation = questTask.getPropertyValue(QuestTask.QuestTaskPropertyType.TARGET_LOCATION.toString());
             if (taskLocation == null ||
-            taskLocation.isEmpty() ||
-            !taskLocation.equalsIgnoreCase(mapMgr.getCurrentMapType().toString))) continue;
+                taskLocation.isEmpty() ||
+                !taskLocation.equalsIgnoreCase(mapMgr.getCurrentMapType().toString())) continue;
+
+            switch (questTask.getQuestType()){
+                case FETCH:
+                    String taskConfig = questTask.getPropertyValue(QuestTask.QuestTaskPropertyType.TARGET_TYPE.toString());
+                    if (taskConfig == null || taskConfig.isEmpty()) break;
+                    EntityConfig config = Entity.getEntityConfig(taskConfig);
+
+                    Array<Vector2> questItemPositions = ProfileManager.getInstance().getProperty(config.getEntityID(), Array.class);
+                    if (questItemPositions == null) break;
+
+                    //Case where all the items have been picked up
+                    if (questItemPositions.size == 0) {
+                        questTask.setTaskComplete();
+                        ;
+                        Gdx.app.debug(TAG, "TASK : " + questTask.getId() + " is complete of Quest: " + questID);
+                        Gdx.app.debug(TAG, "INFO : " + QuestTask.QuestTaskPropertyType.TARGET_TYPE.toString());
+                    }
+                    break;
+                case KILL:
+                    break;
+                case DELIVERY:
+                    break;
+                case GUARD:
+                    break;
+                case ESCORT:
+                    break;
+                case RETURN:
+                    break;
+                case DISCOVER:
+                    break;
+             }
+          }
+    }
+
+    public void init(MapManager mapMgr){
+        ArrayList<QuestTask> allQuestTasks = getAllQuestTasks();
+        for (QuestTask questTask: allQuestTasks){
+
+            if (questTask.isTaskComplete()) continue;
+
+            //We first want to make sure the task is available and is relevant to current location
+            if (!isQuestTaskAvailable(questTask.getId())) continue;
+
+            String taskLocation = questTask.getPropertyValue(QuestTask.QuestTaskPropertyType.TARGET_LOCATION.toString());
+            if ((taskLocation == null) ||
+                taskLocation.isEmpty() ||
+                        !taskLocation.equalsIgnoreCase(mapMgr.getCurrentMapType().toString())) continue;
+
+            switch (questTask.getQuestType()){
+                case FETCH:
+                    Array<Entity> questEntities = new Array<Entity>();
+                    Array<Vector2> positions = mapMgr.getQuestItemSpawnPositions(questID, questTask.getId());
+                    String taskConfig = questTask.getPropertyValue(QuestTask.QuestTaskPropertyType.TARGET_TYPE.toString());
+                    if (taskConfig == null || taskConfig.isEmpty()) break;
+                    EntityConfig config = Entity.getEntityConfig(taskConfig);
+
+                    Array<Vector2> questItemPositions = ProfileManager.getInstance().getProperty(config.getEntityID(), Array.class);
+
+                    if (questItemPositions == null){
+                        questItemPositions = new Array<Vector2>();
+                        for (Vector2 position: positions){
+                            questItemPositions.add(position);
+                            Entity entity = Map.initEntity(config, position);
+                            entity.getEntityConfig().setCurrentQuestID(questID);
+                            questEntities.add(entity);
+                        }
+                    } else {
+                        for (Vector2 questItemPosition: questItemPositions){
+                            Entity entity = Map.initEntity(config, questItemPosition);
+                            entity.getEntityConfig().setCurrentQuestID(questID);
+                            questEntities.add(entity);
+                        }
+                    }
+
+                    mapMgr.addMapQuestEntities(questEntities);
+                    ProfileManager.getInstance().setProperty(config.getEntityID(), questItemPositions);
+                    break;
+                case KILL:
+                    break;
+                case DELIVERY:
+                    break;
+                case GUARD:
+                    break;
+                case ESCORT:
+                    break;
+                case RETURN:
+                    break;
+                case DISCOVER:
+                    break;
+            }
         }
     }
-}
 
+    public String toString(){
+        return questTitle;
+    }
+
+    public String toJson(){
+        Json json = new Json();
+        return json.prettyPrint(this);
+    }
+}

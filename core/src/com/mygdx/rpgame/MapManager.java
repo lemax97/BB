@@ -55,7 +55,9 @@ public class MapManager implements ProfileObserver {
 
                 break;
             case SAVING_PROFILE:
-                profileManager.setProperty("currentMapType", _currentMap._currentMapType.toString());
+                if (_currentMap != null){
+                    profileManager.setProperty("currentMapType", _currentMap._currentMapType.toString());
+                }
                 profileManager.setProperty("topWorldMapStartPosition", MapFactory.getMap(MapFactory.MapType.TOP_WORLD).getPlayerStart() );
                 profileManager.setProperty("castleOfDoomMapStartPosition", MapFactory.getMap(MapFactory.MapType.CASTLE_OF_DOOM).getPlayerStart() );
                 profileManager.setProperty("townMapStartPosition", MapFactory.getMap(MapFactory.MapType.TOWN).getPlayerStart() );
@@ -73,18 +75,38 @@ public class MapManager implements ProfileObserver {
             return;
         }
 
-        //Unregister observers
+        _currentMap = map;
+        _mapChanged = true;
+        clearCurrentSelectedMapEntity();
+        Gdx.app.debug(TAG, "Player Start: (" + _currentMap.getPlayerStart().x + "," + _currentMap.getPlayerStart().y + ")");
+    }
+
+    public void unregisterCurrentMapEntityObservers(){
         if (_currentMap != null){
             Array<Entity> entities = _currentMap.getMapEntities();
             for (Entity entity: entities){
                 entity.unregisterObserver();
             }
-        }
 
-        _currentMap = map;
-        _mapChanged = true;
-        clearCurrentSelectedMapEntity();
-        Gdx.app.debug(TAG, "Player Start: (" + _currentMap.getPlayerStart().x + "," + _currentMap.getPlayerStart().y + ")");
+            Array<Entity> questEntities = _currentMap.getMapQuestEntities();
+            for (Entity questEntity: questEntities){
+                questEntity.unregisterObserver();
+            }
+        }
+    }
+
+    public void registerCurrentMapEntityObservers(ComponentObserver observer){
+        if (_currentMap != null){
+            Array<Entity> entities = _currentMap.getMapEntities();
+            for (Entity entity: entities){
+                entity.registerObserver(observer);
+            }
+
+            Array<Entity> questEntities = _currentMap.getMapQuestEntities();
+            for (Entity questEntity: questEntities){
+                questEntity.registerObserver(observer);
+            }
+        }
     }
 
     public void setClosestStartPositionFromScaledUnits(Vector2 position) {
@@ -97,6 +119,18 @@ public class MapManager implements ProfileObserver {
 
     public MapLayer getPortalLayer(){
         return _currentMap.getPortalLayer();
+    }
+
+    public Array<Vector2> getQuestItemSpawnPositions(String objectName, String objectTaskID){
+        return _currentMap.getQuestItemSpawnPositions(objectName, objectTaskID);
+    }
+
+    public MapLayer getQuestDiscoverLayer(){
+        return _currentMap.getQuestDiscoverLayer();
+    }
+
+    public MapFactory.MapType getCurrentMapType(){
+        return _currentMap.getCurrentMapType();
     }
 
     public Vector2 getPlayerStartUnitScaled(){
@@ -116,6 +150,35 @@ public class MapManager implements ProfileObserver {
 
     public final Array<Entity> getCurrentMapEntities(){
         return _currentMap.getMapEntities();
+    }
+
+    public final Array<Entity> getCurrentMapQuestEntities(){
+        return _currentMap.getMapQuestEntities();
+    }
+
+    public void addMapQuestEntities(Array<Entity> entities){
+        _currentMap.getMapQuestEntities().addAll(entities);
+    }
+
+    public void removeMapQuestEntity(Entity entity){
+        entity.unregisterObserver();
+
+        Array<Vector2> positions = ProfileManager.getInstance().getProperty(entity.getEntityConfig().getEntityID(), Array.class);
+        if (positions == null) return;
+
+        for (Vector2 position: positions){
+            if (position.x == entity.getCurrentPosition().x &&
+            position.y == entity.getCurrentPosition().y){
+                positions.removeValue(position, true);
+                break;
+            }
+        }
+        _currentMap.getMapQuestEntities().removeValue(entity, true);
+        ProfileManager.getInstance().setProperty(entity.getEntityConfig().getEntityID(), positions);
+    }
+
+    public void clearAllMapQuestEntities(){
+        _currentMap.getMapQuestEntities().clear();
     }
 
     public Entity getCurrentSelectedMapEntity(){
@@ -155,6 +218,4 @@ public class MapManager implements ProfileObserver {
     public void setMapChanged(boolean hasMapChanged) {
         this._mapChanged = hasMapChanged;
     }
-
-
 }
