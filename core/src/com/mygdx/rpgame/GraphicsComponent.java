@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Json;
 
 import java.util.Hashtable;
 
-public abstract class GraphicsComponent extends ComponentSubject implements Component{
+public abstract class GraphicsComponent extends ComponentSubject implements Component {
     protected TextureRegion _currentFrame = null;
     protected float _frameTime = 0f;
     protected Entity.State _currentState;
@@ -23,7 +23,7 @@ public abstract class GraphicsComponent extends ComponentSubject implements Comp
     protected ShapeRenderer _shapeRenderer;
 
     protected GraphicsComponent(){
-        _currentPosition = new Vector2(0, 0);
+        _currentPosition = new Vector2(0,0);
         _currentState = Entity.State.WALKING;
         _currentDirection = Entity.Direction.DOWN;
         _json = new Json();

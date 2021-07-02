@@ -30,6 +30,7 @@ public class InventorySlotTooltipListener extends InputListener {
         return false;
     }
 
+
     @Override
     public void touchDragged(InputEvent event, float x, float y, int pointer) {
         InventorySlot inventorySlot = (InventorySlot) event.getListenerActor();

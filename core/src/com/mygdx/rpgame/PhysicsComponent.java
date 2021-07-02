@@ -22,6 +22,8 @@ public abstract class PhysicsComponent extends ComponentSubject implements Compo
     protected Json _json;
     protected Vector2 _velocity;
 
+    protected Array<Entity> _tempEntities;
+
     public Rectangle _boundingBox;
     protected BoundingBoxLocation _boundingBoxLocation;
 
@@ -40,15 +42,18 @@ public abstract class PhysicsComponent extends ComponentSubject implements Compo
         this._velocity = new Vector2(2f,2f);
         this._boundingBox = new Rectangle();
         this._json = new Json();
+        this._tempEntities = new Array<Entity>();
         _boundingBoxLocation = BoundingBoxLocation.BOTTOM_LEFT;
         _selectionRay = new Ray(new Vector3(), new Vector3());
     }
 
     protected boolean isCollisionWithMapEntities(Entity entity, MapManager mapMgr){
-        Array<Entity> entities = mapMgr.getCurrentMapEntities();
+        _tempEntities.clear();
+        _tempEntities.addAll(mapMgr.getCurrentMapEntities());
+        _tempEntities.addAll(mapMgr.getCurrentMapQuestEntities());
         boolean isCollisionWithMapEntities = false;
 
-        for (Entity mapEntity: entities){
+        for (Entity mapEntity: _tempEntities){
             //Check for testing against self
             if (mapEntity.equals(entity)){
                 continue;
@@ -62,6 +67,7 @@ public abstract class PhysicsComponent extends ComponentSubject implements Compo
                 break;
             }
         }
+        _tempEntities.clear();
         return isCollisionWithMapEntities;
     }
 
@@ -72,7 +78,7 @@ public abstract class PhysicsComponent extends ComponentSubject implements Compo
             return false;
         }
 
-        if (entitySource.getCurrentBoundingBox().overlaps(entityTarget.getCurrentBoundingBox())){
+        if (entitySource.getCurrentBoundingBox().overlaps(entityTarget.getCurrentBoundingBox()) ){
             //Collision
             entitySource.sendMessage(MESSAGE.COLLISION_WITH_ENTITY);
             isCollisionWithMapEntities = true;
@@ -152,7 +158,7 @@ public abstract class PhysicsComponent extends ComponentSubject implements Compo
         float origWidth = Entity.FRAME_WIDTH;
         float origHeight = Entity.FRAME_HEIGHT;
 
-        float widthReductionAmount = 1.0f - percentageWidthReduced;//.8f for 20% (1 - .20)
+        float widthReductionAmount = 1.0f - percentageWidthReduced; //.8f for 20% (1 - .20)
         float heightReductionAmount = 1.0f - percentageHeightReduced; //.8f for 20% (1 - .20)
 
         if( widthReductionAmount > 0 && widthReductionAmount < 1){

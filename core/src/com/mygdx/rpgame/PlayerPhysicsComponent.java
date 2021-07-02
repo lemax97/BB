@@ -16,10 +16,12 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
     private Entity.State _state;
     private Vector3 _mouseSelectCoordinates;
     private boolean _isMouseSelectEnabled = false;
+    private String previousDiscovery;
 
     public PlayerPhysicsComponent(){
         _boundingBoxLocation = BoundingBoxLocation.BOTTOM_CENTER;
         initBoundingBox(0.3f, 0.5f);
+        previousDiscovery = "";
 
         _mouseSelectCoordinates = new Vector3(0, 0, 0);
     }
@@ -40,6 +42,7 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
             if (string[0].equalsIgnoreCase(MESSAGE.INIT_START_POSITION.toString())){
                 _currentEntityPosition = _json.fromJson(Vector2.class, string[1]);
                 _nextEntityPosition.set(_currentEntityPosition.x, _currentEntityPosition.y);
+                previousDiscovery = "";
             } else if (string[0].equalsIgnoreCase(MESSAGE.CURRENT_STATE.toString())){
                 _state = _json.fromJson(Entity.State.class, string[1]);
             } else if (string[0].equalsIgnoreCase(MESSAGE.CURRENT_DIRECTION.toString())){
@@ -56,6 +59,7 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
         //We want the hitbox to be at the feet for a better feel
         updateBoundingBoxPosition(_nextEntityPosition);
         updatePortalLayerActivation(mapMgr);
+        updateDiscoverLayerActivation(mapMgr);
 
         if (_isMouseSelectEnabled){
             selectMapEntityCandidate(mapMgr);
@@ -78,7 +82,9 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
     }
 
     private void selectMapEntityCandidate(MapManager mapMgr){
-        Array<Entity> currentEntities = mapMgr.getCurrentMapEntities();
+        _tempEntities.clear();
+        _tempEntities.addAll(mapMgr.getCurrentMapEntities());
+        _tempEntities.addAll(mapMgr.getCurrentMapQuestEntities());
 
         //Convert screen coordinates to world coordinates, then to unit scale coordinates
         mapMgr.getCamera().unproject(_mouseSelectCoordinates);
@@ -87,7 +93,7 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
 
         //Gdx.app.debug(TAG, "Mouse Coordinates " + "(" + _mouseSelectCoordinates.x + "," + _mouseSelectCoordinates.y + ")");
 
-        for (Entity mapEntity : currentEntities){
+        for (Entity mapEntity : _tempEntities){
             //Don't break, reset all entities
             mapEntity.sendMessage(MESSAGE.ENTITY_DESELECTED);
             Rectangle mapEntityBoundingBox = mapEntity.getCurrentBoundingBox();
@@ -106,12 +112,50 @@ public class PlayerPhysicsComponent extends PhysicsComponent{
                 }
             }
         }
+        _tempEntities.clear();
+    }
+
+    private boolean updateDiscoverLayerActivation(MapManager mapMgr){
+        MapLayer mapDiscoverLayer =  mapMgr.getQuestDiscoverLayer();
+
+        if( mapDiscoverLayer == null ){
+            return false;
+        }
+
+        Rectangle rectangle = null;
+
+        for( MapObject object: mapDiscoverLayer.getObjects()){
+            if(object instanceof RectangleMapObject) {
+                rectangle = ((RectangleMapObject)object).getRectangle();
+
+                if (_boundingBox.overlaps(rectangle) ){
+                    String questID = object.getName();
+                    String questTaskID = (String)object.getProperties().get("taskID");
+                    String val = questID + MESSAGE_TOKEN + questTaskID;
+
+                    if( questID == null ) {
+                        return false;
+                    }
+
+                    if( previousDiscovery.equalsIgnoreCase(val) ){
+                        return true;
+                    }else{
+                        previousDiscovery = val;
+                    }
+
+                    notify(_json.toJson(val), ComponentObserver.ComponentEvent.QUEST_LOCATION_DISCOVERED);
+                    Gdx.app.debug(TAG, "Discover Area Activated");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean updatePortalLayerActivation(MapManager mapMgr){
-        MapLayer mapPortalLayer = mapMgr.getPortalLayer();
+        MapLayer mapPortalLayer =  mapMgr.getPortalLayer();
 
-        if ( mapPortalLayer == null ){
+        if( mapPortalLayer == null ){
             Gdx.app.debug(TAG, "Portal Layer doesn't exist!");
             return false;
         }

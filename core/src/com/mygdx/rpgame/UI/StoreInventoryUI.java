@@ -26,9 +26,6 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
    private DragAndDrop _dragAndDrop;
    private Array<Actor> _inventoryActors;
 
-   private static String STORE_INVENTORY = "Store_Inventory";
-   private static String PLAYER_INVENTORY = "Player_Inventory";
-
    private final int _slotWidth = 52;
    private final int _slotHeight = 52;
 
@@ -161,7 +158,7 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
                     checkButtonStates();
 
                     //Make sure we update the owner of the items
-                    InventoryUI.setInventoryItemNames(_playerInventorySlotTable, PLAYER_INVENTORY);
+                    InventoryUI.setInventoryItemNames(_playerInventorySlotTable, InventoryUI.PLAYER_INVENTORY);
                     savePlayerInventory();
                 }
             }
@@ -184,7 +181,7 @@ public class StoreInventoryUI extends Window implements InventorySlotObserver, S
                         InventorySlot inventorySlot = (InventorySlot) cells.get(i).getActor();
                         if (inventorySlot == null) continue;
                         if (inventorySlot.hasItem() &&
-                        inventorySlot.getTopInventoryItem().getName().equalsIgnoreCase(PLAYER_INVENTORY)){
+                        inventorySlot.getTopInventoryItem().getName().equalsIgnoreCase(InventoryUI.PLAYER_INVENTORY)){
                             inventorySlot.clearAllInventoryItems(false);
                         }
                     }

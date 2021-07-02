@@ -9,7 +9,7 @@ public class InventorySlotTooltip extends Window {
     private Skin _skin;
     private Label _description;
 
-    public InventorySlotTooltip(final Skin skin) {
+    public InventorySlotTooltip(final Skin skin){
         super("", skin);
         this._skin = skin;
 
@@ -21,7 +21,7 @@ public class InventorySlotTooltip extends Window {
         this.setVisible(false);
     }
 
-    public void setVisible(InventorySlot inventorySlot, boolean visible){
+    public void setVisible(InventorySlot inventorySlot, boolean visible) {
         super.setVisible(visible);
 
         if (inventorySlot == null){

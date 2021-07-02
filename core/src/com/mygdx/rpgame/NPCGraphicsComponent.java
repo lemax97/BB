@@ -130,12 +130,8 @@ public class NPCGraphicsComponent extends GraphicsComponent {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
+
     @Override
     public void dispose() {
-
     }
-
-
-
-
 }

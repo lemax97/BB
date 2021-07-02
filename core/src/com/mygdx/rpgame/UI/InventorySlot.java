@@ -42,7 +42,7 @@ public class InventorySlot extends Stack implements InventorySlotSubject {
         this.add(_numItemsLabel);
     }
 
-    public InventorySlot(int filterItemType, Image customBackgroundDecal) {
+    public InventorySlot(int filterItemType, Image customBackgroundDecal){
         this();
         _filterItemType = filterItemType;
         _customBackgroundDecal = customBackgroundDecal;
@@ -137,6 +137,7 @@ public class InventorySlot extends Stack implements InventorySlotSubject {
             }
         }
     }
+
 
     public void clearAllInventoryItems(boolean sendRemoveNotifications){
         if (hasItem()){
