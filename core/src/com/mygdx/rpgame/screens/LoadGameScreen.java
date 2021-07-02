@@ -16,11 +16,12 @@ import com.mygdx.rpgame.BludBourne;
 import com.mygdx.rpgame.Utility;
 import com.mygdx.rpgame.profile.ProfileManager;
 
+
 public class LoadGameScreen implements Screen {
     private Stage _stage;
     private BludBourne _game;
 
-    public LoadGameScreen(BludBourne game) {
+    public LoadGameScreen(BludBourne game){
         _game = game;
 
         //create
@@ -66,13 +67,14 @@ public class LoadGameScreen implements Screen {
             }
         });
 
-        loadButton.addListener(new InputListener(){
+        loadButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if( listItems.getSelected() == null) return true;
                 String fileName = listItems.getSelected().toString();
-                if (fileName != null){
+                if (fileName != null && !fileName.isEmpty()){
                     FileHandle file = ProfileManager.getInstance().getProfileFile(fileName);
-                    if (file != null){
+                    if (file != null) {
                         ProfileManager.getInstance().setCurrentProfile(fileName);
                         ProfileManager.getInstance().loadProfile();
                         _game.setScreen(_game.getScreenType(BludBourne.ScreenType.MainGame));

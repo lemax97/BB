@@ -77,7 +77,7 @@ public class QuestTask {
     }
 
     public void resetAllProperties(){
-        taskProperties.get(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "false");
+        taskProperties.put(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "false");
     }
 
     public void setPropertyValue(String key, String value){

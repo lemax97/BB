@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.rpgame.Entity;
 import com.mygdx.rpgame.InventoryItem;
 import com.mygdx.rpgame.InventoryItemFactory;
 import com.mygdx.rpgame.InventoryItem.ItemUseType;
@@ -17,6 +18,9 @@ import com.mygdx.rpgame.Utility;
 public class InventoryUI extends Window {
 
     public final static int _numSlots = 50;
+    public static final String PLAYER_INVENTORY = "Player_Inventory";
+    public static final String STORE_INVENTORY = "Store_Inventory";
+
     private int _lengthSlotRow = 10;
     private Table _inventorySlotTable;
     private Table _playerSlotsTable;
@@ -29,7 +33,7 @@ public class InventoryUI extends Window {
 
     private InventorySlotTooltip _inventorySlotTooltip;
 
-    public InventoryUI() {
+    public InventoryUI(){
         super("Inventory", Utility.STATUSUI_SKIN, "solidbackground");
 
         _dragAndDrop = new DragAndDrop();
@@ -153,20 +157,30 @@ public class InventoryUI extends Window {
         return items;
     }
 
-    public static void populateInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop draganddrop){
+    public static void populateInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop draganddrop, String defaultName, boolean disableNonDefaultItems){
         clearInventoryItems(targetTable);
 
         Array<Cell> cells = targetTable.getCells();
-        for (int i = 0; i < inventoryItems.size; i++) {
+        for(int i = 0; i < inventoryItems.size; i++){
             InventoryItemLocation itemLocation = inventoryItems.get(i);
             ItemTypeID itemTypeID = ItemTypeID.valueOf(itemLocation.getItemTypeAtLocation());
-            InventorySlot inventorySlot = ((InventorySlot)cells.get(itemLocation.getLocationIndex()).getActor());
+            InventorySlot inventorySlot =  ((InventorySlot)cells.get(itemLocation.getLocationIndex()).getActor());
 
-            for (int index = 0; index < itemLocation.getNumberItemsAtLocation(); index++) {
+            for( int index = 0; index < itemLocation.getNumberItemsAtLocation(); index++ ){
                 InventoryItem item = InventoryItemFactory.getInstance().getInventoryItem(itemTypeID);
-                item.setName(targetTable.getName());
+                String itemName =  itemLocation.getItemNameProperty();
+                if( itemName == null || itemName.isEmpty() ){
+                    item.setName(defaultName);
+                }else{
+                    item.setName(itemName);
+                }
+
                 inventorySlot.add(item);
-                draganddrop.addSource(new InventorySlotSource(inventorySlot, draganddrop));
+                if( item.getName().equalsIgnoreCase(defaultName) ){
+                    draganddrop.addSource(new InventorySlotSource(inventorySlot, draganddrop));
+                }else if( disableNonDefaultItems == false ){
+                    draganddrop.addSource(new InventorySlotSource(inventorySlot, draganddrop));
+                }
             }
         }
     }
@@ -174,15 +188,37 @@ public class InventoryUI extends Window {
     public static Array<InventoryItemLocation> getInventory(Table targetTable){
         Array<Cell> cells = targetTable.getCells();
         Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
-        for (int i = 0; i < cells.size; i++) {
-            InventorySlot inventorySlot = ((InventorySlot)cells.get(i).getActor());
-            if (inventorySlot == null) continue;
+        for(int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot =  ((InventorySlot)cells.get(i).getActor());
+            if( inventorySlot == null ) continue;
             int numItems = inventorySlot.getNumItems();
-            if (numItems > 0){
+            if( numItems > 0 ){
                 items.add(new InventoryItemLocation(
                         i,
                         inventorySlot.getTopInventoryItem().getItemTypeID().toString(),
-                        numItems));
+                        numItems,
+                        inventorySlot.getTopInventoryItem().getName()));
+            }
+        }
+        return items;
+    }
+
+    public static Array<InventoryItemLocation> getInventoryFiltered(Table targetTable, String filterOutName){
+        Array<Cell> cells = targetTable.getCells();
+        Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
+        for(int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot =  ((InventorySlot)cells.get(i).getActor());
+            if( inventorySlot == null ) continue;
+            int numItems = inventorySlot.getNumItems();
+            if( numItems > 0 ){
+                String topItemName = inventorySlot.getTopInventoryItem().getName();
+                if( topItemName.equalsIgnoreCase(filterOutName)) continue;
+                //System.out.println("[i] " + i + " itemtype: " + inventorySlot.getTopInventoryItem().getItemTypeID().toString() + " numItems " + numItems);
+                items.add(new InventoryItemLocation(
+                        i,
+                        inventorySlot.getTopInventoryItem().getItemTypeID().toString(),
+                        numItems,
+                        inventorySlot.getTopInventoryItem().getName()));
             }
         }
         return items;
@@ -191,47 +227,102 @@ public class InventoryUI extends Window {
     public static Array<InventoryItemLocation> getInventory(Table targetTable, String name){
         Array<Cell> cells = targetTable.getCells();
         Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
-        for (int i = 0; i < cells.size; i++) {
-            InventorySlot inventorySlot = ((InventorySlot) cells.get(i).getActor());
-            if (inventorySlot == null) continue;
+        for(int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot =  ((InventorySlot)cells.get(i).getActor());
+            if( inventorySlot == null ) continue;
             int numItems = inventorySlot.getNumItems(name);
-            if (numItems > 0){
+            if( numItems > 0 ){
                 //System.out.println("[i] " + i + " itemtype: " + inventorySlot.getTopInventoryItem().getItemTypeID().toString() + " numItems " + numItems);
                 items.add(new InventoryItemLocation(
                         i,
                         inventorySlot.getTopInventoryItem().getItemTypeID().toString(),
-                        numItems));
+                        numItems,
+                        name));
             }
         }
         return items;
     }
 
-    public static Array<InventoryItemLocation> getInventory(Table sourceTable, Table targetTable, String name){
-        Array<InventoryItemLocation> items = getInventory(targetTable, name);
+    public static Array<InventoryItemLocation> getInventoryFiltered(Table sourceTable, Table targetTable, String filterOutName){
+        Array<InventoryItemLocation> items = getInventoryFiltered(targetTable, filterOutName);
         Array<Cell> sourceCells = sourceTable.getCells();
         int index = 0;
-        for (InventoryItemLocation item : items){
+        for( InventoryItemLocation item : items ) {
             for (; index < sourceCells.size; index++) {
                 InventorySlot inventorySlot = ((InventorySlot) sourceCells.get(index).getActor());
                 if (inventorySlot == null) continue;
-                int numItems = inventorySlot.getNumItems(name);
-                {
+                int numItems = inventorySlot.getNumItems();
+                if (numItems == 0) {
                     item.setLocationIndex(index);
                     //System.out.println("[index] " + index + " itemtype: " + item.getItemTypeAtLocation() + " numItems " + numItems);
                     index++;
                     break;
                 }
             }
+            if( index == sourceCells.size ){
+                //System.out.println("[index] " + index + " itemtype: " + item.getItemTypeAtLocation() + " numItems " + item.getNumberItemsAtLocation());
+                item.setLocationIndex(index-1);
+            }
         }
         return items;
     }
 
+
     public static void setInventoryItemNames(Table targetTable, String name){
         Array<Cell> cells = targetTable.getCells();
-        for (int i = 0; i < cells.size; i++) {
-            InventorySlot inventorySlot = ((InventorySlot) cells.get(i).getActor());
-            if (inventorySlot == null) continue;
+        for(int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot =  ((InventorySlot)cells.get(i).getActor());
+            if( inventorySlot == null ) continue;
             inventorySlot.updateAllInventoryItemNames(name);
+        }
+    }
+
+    public boolean doesInventoryHaveSpace(){
+        Array<Cell> sourceCells = _inventorySlotTable.getCells();
+        int index = 0;
+
+        for (; index < sourceCells.size; index++) {
+            InventorySlot inventorySlot = ((InventorySlot) sourceCells.get(index).getActor());
+            if (inventorySlot == null) continue;
+            int numItems = inventorySlot.getNumItems();
+            if (numItems == 0) {
+                return true;
+            }else{
+                index++;
+            }
+        }
+        return false;
+    }
+
+    public void addEntityToInventory(Entity entity, String itemName){
+        Array<Cell> sourceCells = _inventorySlotTable.getCells();
+        int index = 0;
+
+        for (; index < sourceCells.size; index++) {
+            InventorySlot inventorySlot = ((InventorySlot) sourceCells.get(index).getActor());
+            if (inventorySlot == null) continue;
+            int numItems = inventorySlot.getNumItems();
+            if (numItems == 0) {
+                InventoryItem inventoryItem = InventoryItemFactory.getInstance().getInventoryItem(ItemTypeID.valueOf(entity.getEntityConfig().getItemTypeID()));
+                inventoryItem.setName(itemName);
+                inventorySlot.add(inventoryItem);
+                _dragAndDrop.addSource(new InventorySlotSource(inventorySlot, _dragAndDrop));
+                break;
+            }
+        }
+    }
+
+    public void removeQuestItemFromInventory(String questID){
+        Array<Cell> sourceCells = _inventorySlotTable.getCells();
+        for (int index = 0; index < sourceCells.size; index++) {
+            InventorySlot inventorySlot = ((InventorySlot) sourceCells.get(index).getActor());
+            if (inventorySlot == null) continue;
+            InventoryItem item = inventorySlot.getTopInventoryItem();
+            if( item == null ) continue;
+            String inventoryItemName = item.getName();
+            if (inventoryItemName != null && inventoryItemName.equals(questID) ) {
+                inventorySlot.clearAllInventoryItems(false);
+            }
         }
     }
 

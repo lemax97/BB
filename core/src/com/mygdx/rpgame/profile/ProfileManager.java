@@ -82,6 +82,7 @@ public class ProfileManager extends ProfileSubject{
             file = Gdx.files.local(fullFilename);
             file.writeString(fileData, !overwrite);
         }
+
         _profiles.put(profileName, file);
     }
 

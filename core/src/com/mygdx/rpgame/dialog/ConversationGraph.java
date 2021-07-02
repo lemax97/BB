@@ -1,7 +1,6 @@
 package com.mygdx.rpgame.dialog;
 
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.StringBuilder;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -21,18 +20,17 @@ public class ConversationGraph extends ConversationGraphSubject {
         setCurrentConversation(rootID);
     }
 
-    public void setConversations(Hashtable<String, Conversation> conversations){
-        if (conversations.size() < 0){
+    public void setConversations(Hashtable<String, Conversation> conversations) {
+        if( conversations.size() < 0 ){
             throw new IllegalArgumentException("Can't have a negative amount of conversations");
         }
 
         this.conversations = conversations;
         this.associatedChoices = new Hashtable<String, ArrayList<ConversationChoice>>(conversations.size());
 
-        for (Conversation conversation: conversations.values()){
+        for( Conversation conversation: conversations.values() ){
             associatedChoices.put(conversation.getId(), new ArrayList<ConversationChoice>());
         }
-        this.conversations = conversations;
     }
 
     public ArrayList<ConversationChoice> getCurrentChoices(){
@@ -45,15 +43,15 @@ public class ConversationGraph extends ConversationGraphSubject {
 
     public void setCurrentConversation(String id){
         Conversation conversation = getConversationByID(id);
-        if (conversation == null ) return;
+        if( conversation == null ) return;
         //Can we reach the new conversation from the current one?
 
         //Make sure we check case where the current node is checked against itself
         if ( currentConversationID == null ||
                 currentConversationID.equalsIgnoreCase(id) ||
-                isReachable(currentConversationID, id)){
+                isReachable(currentConversationID, id) ){
             currentConversationID = id;
-        }else {
+        }else{
             System.out.println("New conversation node [" + id +"] is not reachable from current node [" + currentConversationID + "]");
         }
     }
@@ -65,13 +63,13 @@ public class ConversationGraph extends ConversationGraphSubject {
     }
 
     public boolean isReachable(String sourceID, String sinkID){
-        if ( !isValid(sourceID) || !isValid(sinkID) ) return false;
-        if ( conversations.get(sourceID) == null ) return false;
+        if( !isValid(sourceID) || !isValid(sinkID) ) return false;
+        if( conversations.get(sourceID) == null ) return false;
 
         //First get edges/choices from the source
         ArrayList<ConversationChoice> list = associatedChoices.get(sourceID);
-        if (list == null) return false;
-        for (ConversationChoice choice: list){
+        if( list == null ) return false;
+        for(ConversationChoice choice: list){
             if (choice.getSourceId().equalsIgnoreCase(sourceID) &&
             choice.getDestinationId().equalsIgnoreCase(sinkID)){
                 return true;
@@ -81,7 +79,7 @@ public class ConversationGraph extends ConversationGraphSubject {
     }
 
     public Conversation getConversationByID(String id){
-        if ( !isValid(id)){
+        if ( !isValid(id) ){
             System.out.println("Id " + id + " is not valid!");
             return null;
         }
@@ -112,8 +110,10 @@ public class ConversationGraph extends ConversationGraphSubject {
                 numberTotalChoices++;
                 outputString.append(String.format("%s ", choice.getDestinationId()));
             }
+
             outputString.append(System.getProperty("line.separator"));
         }
+
         outputString.append(String.format("Number conversations: %d", conversations.size()));
         outputString.append(String.format(", Number of choices: %d", numberTotalChoices));
         outputString.append(System.getProperty("line.separator"));

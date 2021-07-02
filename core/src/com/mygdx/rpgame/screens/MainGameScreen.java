@@ -61,14 +61,9 @@ public class MainGameScreen implements Screen {
         _camera = new OrthographicCamera();
         _camera.setToOrtho(false, VIEWPORT.viewportWidth, VIEWPORT.viewportHeight);
 
-        _mapRenderer = new OrthogonalTiledMapRenderer(_mapMgr.getCurrentTiledMap(), Map.UNIT_SCALE);
-        _mapRenderer.setView(_camera);
-        _mapMgr.setCamera(_camera);
-
-        Gdx.app.debug(TAG, "UnitScale value is: " + _mapRenderer.getUnitScale());
-
         _player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER);
         _mapMgr.setPlayer(_player);
+        _mapMgr.setCamera(_camera);
 
         _hudCamera = new OrthographicCamera();
         _hudCamera.setToOrtho(false, VIEWPORT.physicalWidth, VIEWPORT.physicalHeight);
@@ -79,12 +74,18 @@ public class MainGameScreen implements Screen {
         _multiplexer.addProcessor(_playerHUD.getStage());
         _multiplexer.addProcessor(_player.getInputProcessor());
         Gdx.input.setInputProcessor(_multiplexer);
+
+        //Gdx.app.debug(TAG, "UnitScale value is: " + _mapRenderer.getUnitScale());
     }
 
     @Override
     public void show() {
         _gameState = GameState.RUNNING;
         Gdx.input.setInputProcessor(_multiplexer);
+
+        if (_mapRenderer == null){
+            _mapRenderer = new OrthogonalTiledMapRenderer(_mapMgr.getCurrentTiledMap(), Map.UNIT_SCALE);
+        }
     }
 
     @Override
@@ -107,18 +108,14 @@ public class MainGameScreen implements Screen {
 //        _mapRenderer.getBatch().enableBlending();
 //        _mapRenderer.getBatch().setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        if (_mapMgr.hasMapChanged()){
+        if (_mapMgr.hasMapChanged()) {
             _mapRenderer.setMap(_mapMgr.getCurrentTiledMap());
             _player.sendMessage(Component.MESSAGE.INIT_START_POSITION, _json.toJson(_mapMgr.getPlayerStartUnitScaled()));
 
             _camera.position.set(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y, 0f);
             _camera.update();
 
-            //register observers
-            Array<Entity> entities = _mapMgr.getCurrentMapEntities();
-            for (Entity entity: entities){
-                entity.registerObserver(_playerHUD);
-            }
+            _playerHUD.updateEntityObservers();
 
             _mapMgr.setMapChanged(false);
         }

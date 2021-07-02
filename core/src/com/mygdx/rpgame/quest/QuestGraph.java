@@ -135,7 +135,7 @@ public class QuestGraph {
 
         //Will not add if creates cycles
         if (doesCycleExist(questTaskDependency)){
-            System.out.println("Cycle existing! Not adding");
+            System.out.println("Cycle exists! Not adding");
             return;
         }
 

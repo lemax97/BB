@@ -17,7 +17,7 @@ public class InventoryItemFactory {
     private Json _json = new Json();
     private final String INVENTORY_ITEM = "scripts/inventory_items.json";
     private static InventoryItemFactory _instance = null;
-    private Hashtable<ItemTypeID, InventoryItem> _inventoryItemList;
+    private Hashtable<ItemTypeID,InventoryItem> _inventoryItemList;
 
     public static InventoryItemFactory getInstance() {
         if (_instance == null) {
@@ -35,7 +35,6 @@ public class InventoryItemFactory {
             InventoryItem inventoryItem = _json.readValue(InventoryItem.class, jsonVal);
             _inventoryItemList.put(inventoryItem.getItemTypeID(), inventoryItem);
         }
-
     }
 
     public InventoryItem getInventoryItem(ItemTypeID inventoryItemType){

@@ -100,7 +100,7 @@ public class QuestUI extends Window {
             return null;
         }
 
-        clearDialog;
+        clearDialog();
         _quests.add(graph);
         updateQuestItemList();
         return graph;
@@ -176,6 +176,21 @@ private void populateQuestTaskDialog(QuestGraph graph){
 public void initQuests(MapManager mapMgr){
         mapMgr.clearAllMapQuestEntities();
 
+        //populate items if quests have them
+    for (QuestGraph quest: _quests){
+        if (!quest.isQuestComplete()){
+            quest.init(mapMgr);
+        }
+    }
+    ProfileManager.getInstance().setProperty("playerQuests", _quests);
+}
 
+public void updateQuests(MapManager mapMgr){
+        for (QuestGraph quest: _quests){
+            if (!quest.isQuestComplete()){
+                quest.update(mapMgr);
+            }
+        }
+        ProfileManager.getInstance().setProperty("playerQuests", _quests);
 }
 }
